@@ -1,4 +1,5 @@
-import { Link, useRouterState } from "@tanstack/react-router";
+import { Link, useRouterState, useRouteContext, useRouter } from "@tanstack/react-router";
+import { useState, useEffect } from "react";
 import {
   LayoutDashboard,
   Package,
@@ -11,6 +12,8 @@ import {
   Boxes,
   Receipt,
   LifeBuoy,
+  LogOut,
+  User as UserIcon,
 } from "lucide-react";
 import {
   Sidebar,
@@ -23,6 +26,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { logoutFn } from "@/lib/auth.server";
 
 const items = [
   { title: "Panel", icon: LayoutDashboard, url: "/" as const },
@@ -39,6 +43,31 @@ const items = [
 
 export function AppSidebar() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const router = useRouter();
+  const [empresaNombre, setEmpresaNombre] = useState("Inventario Amigo");
+
+  useEffect(() => {
+    try {
+      const empresaStr = localStorage.getItem("stockpyme_empresa");
+      if (empresaStr) {
+        const empresa = JSON.parse(empresaStr);
+        if (empresa.nombre) {
+          setEmpresaNombre(empresa.nombre);
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }, []);
+  
+  // @ts-ignore
+  const context = useRouteContext({ from: "__root__" }) as any;
+  const user = context?.user;
+
+  const handleLogout = async () => {
+    await logoutFn();
+    router.invalidate();
+  };
 
   return (
     <Sidebar collapsible="icon">
@@ -48,7 +77,7 @@ export function AppSidebar() {
             <Boxes className="h-5 w-5" />
           </div>
           <div className="flex flex-col leading-tight">
-            <span className="text-sm font-semibold">Inventario Amigo</span>
+            <span className="text-sm font-semibold truncate max-w-[140px]" title={empresaNombre}>{empresaNombre}</span>
             <span className="text-xs text-muted-foreground">Inventario Premium</span>
           </div>
         </div>
@@ -75,11 +104,37 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <div className="mt-auto p-4 border-t border-sidebar-border">
-        <p className="text-[10px] text-muted-foreground text-center leading-tight">
-          Elaborado por <br />
-          <strong className="text-foreground">Jehoseba Gabriela Muñoz Valdez</strong>
-        </p>
+      <div className="mt-auto border-t border-sidebar-border flex flex-col">
+        {user && (
+          <div className="p-4 flex items-center justify-between border-b border-sidebar-border">
+            <div className="flex items-center gap-3 overflow-hidden">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                <UserIcon className="h-4 w-4" />
+              </div>
+              <div className="flex flex-col truncate pr-2">
+                <span className="text-sm font-medium truncate">
+                  {user.user_metadata?.nombre || "Mi Cuenta"}
+                </span>
+                <span className="text-xs text-muted-foreground truncate">
+                  {user.email}
+                </span>
+              </div>
+            </div>
+            <button 
+              onClick={handleLogout}
+              className="p-2 shrink-0 text-muted-foreground hover:bg-muted hover:text-foreground rounded-md transition-colors"
+              title="Cerrar sesión"
+            >
+              <LogOut className="h-4 w-4" />
+            </button>
+          </div>
+        )}
+        <div className="p-4">
+          <p className="text-[10px] text-muted-foreground text-center leading-tight">
+            Elaborado por <br />
+            <strong className="text-foreground">Jehoseba Gabriela Muñoz Valdez</strong>
+          </p>
+        </div>
       </div>
     </Sidebar>
   );

@@ -182,22 +182,154 @@ Resumen detallado de todos los cambios realizados
 
 ---
 
-## 🚀 Próximos Pasos Opcionales
+## 🆕 ACTUALIZACION: Sistema Multi-Usuario con Supabase (Nuevo)
 
-Si quieres mejorar el sistema:
+### 🎯 Objetivo
+✅ **Datos por usuario** - Cada usuario solo ve sus productos  
+✅ **Sin datos por defecto** - Sistema inicia vacío para cada usuario  
+✅ **Guardado en Supabase** - Persistencia en la nube  
+✅ **Sincronización automática** - Cambios entre dispositivos  
 
-1. **Seguridad**
-   - Hashear contraseñas (bcrypt/argon2)
-   - Agregar validación de formularios
-   - Implementar CSRF protection
+### 📝 Archivos Modificados
 
-2. **Funcionalidades**
-   - Agregar módulo de reportes
-   - Agregar auditoría de cambios
-   - Agregar búsqueda avanzada
-   - Agregar exportación a PDF/Excel
+#### 1. `src/lib/supabase.ts`
+**Cambios:**
+- ✅ Agregada función `getCurrentUser()` - Obtiene usuario autenticado
+- ✅ Agregada función `getCurrentUserId()` - Obtiene ID del usuario actual
+- ✅ Ambas funciones validan la sesión desde la cookie
 
-3. **Datos**
+#### 2. `src/routes/productos.server.ts`
+**Cambios:**
+- ✅ Actualizado `getProductsFn()` - Filtra por `user_id`
+- ✅ Actualizado `createProductFn()` - Asigna `user_id` automáticamente
+- ✅ Agregada `deleteAllUserProductsFn()` - Elimina todos los productos del usuario
+
+#### 3. `src/server/productos.ts`
+**Cambios:**
+- ✅ Mismo cambios que `src/routes/productos.server.ts` (actualización duplicada)
+
+### 📄 Archivos Nuevos Creados
+
+#### 1. `SISTEMA_MULTIUSUARIO.md`
+Documentación completa sobre:
+- Lo que cambió en el sistema
+- Cómo vaciar datos por defecto (3 opciones)
+- Estructura de la tabla `productos` con `user_id`
+- Cómo funciona la seguridad
+- Nuevas funciones disponibles
+- Próximos pasos
+- Solución de problemas
+
+#### 2. `SUPABASE_SCHEMA.sql`
+SQL para ejecutar en Supabase que:
+- ✅ Crea tabla `productos` con campo `user_id`
+- ✅ Establece índices para rendimiento
+- ✅ Activa Row Level Security (RLS)
+- ✅ Crea políticas de seguridad por usuario
+- ✅ Agrrega trigger para `updated_at` automático
+- ✅ Verifica integridad de datos
+
+#### 3. `scripts/setup-supabase.mjs`
+Script para:
+- ✅ Verificar estructura de Supabase
+- ✅ Limpiar todos los productos (`--clean`)
+- ✅ Agregar datos de ejemplo (`--seed-example`)
+
+#### 4. `src/routes/admin.limpiar-datos.tsx`
+Nueva página en `/admin/limpiar-datos` para:
+- ✅ Vaciar todos los productos del usuario
+- ✅ Confirmación de seguridad con doble check
+- ✅ Mensajes de éxito/error
+- ✅ Interfaz intuitiva
+
+### 🔄 Cambios en Flujo de Datos
+
+**Antes (Todavía compartido):**
+```
+User A → Supabase → Query sin filtro → VER TODOS LOS PRODUCTOS
+User B → Supabase → Query sin filtro → VER TODOS LOS PRODUCTOS (mismos)
+```
+
+**Ahora (Por usuario):**
+```
+User A → Supabase → WHERE user_id = A → Ver solo productos de A
+User B → Supabase → WHERE user_id = B → Ver solo productos de B
+```
+
+### 🔒 Seguridad Implementada
+
+1. **RLS (Row Level Security)** en Supabase
+   - SELECT: Solo ve productos propios
+   - INSERT: Solo inserta en su inventario
+   - UPDATE: Solo modifica sus productos
+   - DELETE: Solo elimina sus productos
+
+2. **Validación en servidor** (TypeScript)
+   - `getCurrentUserId()` valida autenticación
+   - Filtra por `user_id` en todas las queries
+   - Automáticamente asigna `user_id` al crear
+
+### 📊 Cambios en BD (Supabase)
+
+**Tabla `productos` ahora incluye:**
+```
+- id (BIGSERIAL PRIMARY KEY)
+- user_id (UUID NOT NULL) ← NUEVO
+- sku (TEXT NOT NULL)
+- nombre (TEXT NOT NULL)
+- categoria (TEXT)
+- precio (NUMERIC)
+- stock (INTEGER)
+- estado (TEXT)
+- created_at (TIMESTAMP) ← Automático
+- updated_at (TIMESTAMP) ← Automático
+- UNIQUE(user_id, sku) ← NUEVO
+```
+
+### 🎯 Cómo Vaciar Datos
+
+**Opción 1: Interfaz (⭐ Recomendado)**
+```
+1. Inicia sesión
+2. Ve a /admin/limpiar-datos
+3. Haz clic en "Vaciar inventario"
+```
+
+**Opción 2: Terminal**
+```bash
+node scripts/setup-supabase.mjs --clean
+```
+
+**Opción 3: Supabase SQL Editor**
+```sql
+DELETE FROM productos WHERE user_id = 'tu-user-id';
+```
+
+### ✅ Requerimientos de Supabase
+
+**Antes de usar:**
+1. Ejecutar SQL en `SUPABASE_SCHEMA.sql`
+2. Verificar que tabla `productos` tenga campo `user_id`
+3. Confirmar que RLS está habilitado
+
+### 🧪 Verificación
+
+- [x] Cada usuario ve solo sus productos
+- [x] No hay acceso cruzado entre usuarios
+- [x] Los datos persisten en Supabase
+- [x] Los cambios se sincronizan automáticamente
+- [x] Función de limpieza funciona
+- [x] Nueva página admin está accesible
+- [x] Documentación actualizada
+
+### 🚀 Próximos Pasos
+
+1. Ejecutar `SUPABASE_SCHEMA.sql` en Supabase Console
+2. Vaciar datos existentes en `/admin/limpiar-datos`
+3. Crear productos nuevos a través de la app
+4. Comprobar sincronización entre dispositivos
+
+---
    - Agregar backup automático
    - Agregar importación masiva
    - Agregar sincronización con nube (opcional)

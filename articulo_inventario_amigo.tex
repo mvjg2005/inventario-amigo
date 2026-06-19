@@ -1,0 +1,243 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{geometry}
+\geometry{top=2.5cm, bottom=2.5cm, left=3cm, right=3cm}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{caption}
+
+% Configuración de colores para listings
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{blue},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+\lstset{style=mystyle}
+
+% Configuración de cabeceras
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{Inventario Amigo --- Reporte Técnico}
+\lhead{Ingeniería de Software y Sistemas de Información}
+\cfoot{\thepage}
+
+\title{\textbf{Diseño e Implementación de Inventario Amigo: Un Sistema Inteligente de Gestión de Inventario con Dictado por Voz y Soporte Multidivisa}}
+\author{\textbf{MIVA} \\
+Departamento de Ingeniería de Sistemas \\
+\textit{inventario-amigo@miva.dev}}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Este artículo presenta el diseño y desarrollo de \textbf{Inventario Amigo}, un sistema web responsivo de última generación para la administración y control de inventarios, adaptado específicamente a las necesidades del comercio y Pymes en Bolivia. El sistema integra tecnologías web modernas como React, Vite y TanStack Start para el frontend, y Supabase para el backend en tiempo real. Como principales innovaciones, Inventario Amigo incorpora un módulo de dictado de inventarios por voz mediante el estándar Web Speech API con procesamiento inteligente, y un sistema dinámico de conversión multidivisa (Bolivianos/Dólares) parametrizable. Se describen detalladamente la arquitectura técnica, la seguridad mediante políticas RLS en Postgres, y las estrategias de optimización que garantizan el acceso óptimo desde dispositivos móviles y un despliegue sin servidor (Serverless) en la nube de Vercel.
+\end{abstract}
+
+\textbf{Palabras clave:} Gestión de Inventario, Web Speech API, Conversión Multidivisa, Supabase, React, Serverless, Vercel, Responsividad.
+
+\newpage
+
+\section{Introducción}
+La administración de inventarios es una tarea crítica para la supervivencia y competitividad de las pequeñas y medianas empresas (Pymes) en economías emergentes como la de Bolivia. A menudo, las herramientas existentes presentan interfaces complejas o carecen de adaptabilidad ante realidades macroeconómicas locales, como la coexistencia de transacciones en moneda nacional (Bolivianos, Bs) y extranjera (Dólares, USD). 
+
+Adicionalmente, el ingreso manual de datos en almacenes representa un cuello de botella propenso a errores humanos. El personal encargado suele requerir el uso de sus manos para manipular mercancía, lo que dificulta la interacción continua con computadoras de escritorio.
+
+Para solventar estas limitaciones, se propone \textbf{Inventario Amigo}, una aplicación web moderna diseñada bajo principios de alta fidelidad estética, responsividad móvil extrema y asistentes de voz incorporados. Los objetivos principales del desarrollo técnico incluyen:
+\begin{enumerate}
+    \item Desarrollar una interfaz responsiva premium adaptada a dispositivos móviles.
+    \item Integrar reconocimiento de voz robusto y seguro para el registro de inventarios sin manos.
+    \item Implementar un módulo de configuración que maneje dinámicamente tasas de cambio cambiantes (e.g. 6.96 Bs/USD) y aplique conversión en tiempo real en todos los componentes del sistema.
+    \item Asegurar un pipeline de despliegue continuo en la nube para acceso universal de dispositivos.
+\end{enumerate}
+
+\section{Arquitectura del Sistema}
+El diseño arquitectónico de Inventario Amigo se divide en tres capas principales que garantizan desacoplamiento, alto rendimiento y resiliencia.
+
+\subsection{Capa de Presentación (Frontend)}
+Se implementa una SPA (Single Page Application) reactiva utilizando la librería React empacada con Vite para una compilación ultra-rápida. La navegación por rutas está gestionada por \textbf{TanStack Router / Start}, proporcionando tipado estático completo de rutas y carga asíncrona de datos en servidor (SSR).
+
+El sistema visual emplea componentes de UI basados en Radix Primitives y TailwindCSS/Vanilla CSS para crear una experiencia fluida, con efectos de vidrio (glassmorphism), transiciones elegantes de carga y soporte integral de modo oscuro.
+
+\subsection{Capa de Backend y Almacenamiento (Supabase)}
+Se utiliza Supabase como backend-as-a-service (BaaS). El núcleo de la persistencia de datos reside en una base de datos relacional PostgreSQL. Supabase proporciona las siguientes ventajas integradas:
+\begin{itemize}
+    \item \textbf{Autenticación}: Manejo automático de sesiones, JWT y registro seguro de usuarios.
+    \item \textbf{Tiempo Real (Realtime)}: Sincronización inmediata de cambios de stock entre múltiples terminales de usuario.
+    \item \textbf{Seguridad de Fila (RLS)}: Políticas granulares en la base de datos que controlan los permisos de escritura y lectura según el rol del usuario autenticado (Administrador, Empleado).
+\end{itemize}
+
+\begin{figure}[h]
+    \centering
+    \caption{Diagrama de Arquitectura de Inventario Amigo}
+    \label{fig:arch}
+    \begin{lstlisting}[language=HTML]
+    [Cliente Web: Celular / PC] <--- (HTTPS/WSS) ---> [Vercel Edge Functions]
+                                                             |
+                                                       (API REST/JWT)
+                                                             v
+                                                    [Supabase Services]
+                                                    - PostgreSQL (DB)
+                                                    - Auth (OAuth/Email)
+                                                    - Realtime Channels
+    \end{lstlisting}
+\end{figure}
+
+\newpage
+
+\section{Diseño e Implementación de Componentes}
+A continuación, se detallan las implementaciones críticas que resuelven los problemas del negocio e introducen interactividad inteligente.
+
+\subsection{Mecanismo de Conversión Multidivisa Dinámica}
+A diferencia de sistemas tradicionales donde los precios son estáticos, Inventario Amigo almacena todas las cifras financieras en Bolivianos (Bs) en la base de datos como una única "fuente de verdad" (Single Source of Truth), evitando discrepancias de redondeo acumuladas. La conversión a Dólares (USD) se realiza en el cliente en tiempo real bajo demanda, según el estado del panel de configuración:
+
+\begin{equation}
+P_{\text{USD}} = \frac{P_{\text{Bs}}}{T_c}
+\end{equation}
+Donde $P_{\text{Bs}}$ es el precio almacenado, $T_c$ es la tasa de cambio vigente parametrizada (e.g. 6.96) y $P_{\text{USD}}$ es el valor renderizado si la opción de mostrar en dólares está habilitada.
+
+El fragmento de código de la utilidad de formateo implementa esta lógica de forma centralizada:
+\begin{lstlisting}[language=TypeScript, caption={Función de formateo de moneda dinámico}]
+export function formatMoney(amountBs: number): string {
+  const config = getGlobalConfig(); // Lee de localStorage/estado
+  if (config.mostrarEnDolares) {
+    const amountUsd = amountBs / config.tasaCambio;
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+    }).format(amountUsd);
+  }
+  return new Intl.NumberFormat("es-BO", {
+    style: "currency",
+    currency: "BOB",
+  }).format(amountBs);
+}
+\end{lstlisting}
+
+\subsection{Dictado e Interfaz Asistida por Voz (Web Speech API)}
+El registro rápido de mercancías utiliza la API nativa de reconocimiento de voz del navegador (`SpeechRecognition`). Sin embargo, su despliegue real presenta retos de seguridad y compatibilidad. La API restringe el acceso al hardware de audio (micrófono) únicamente a \textbf{contextos seguros (HTTPS o localhost)}.
+
+Para garantizar una experiencia de usuario amigable y evitar fallas silenciosas en producción, el sistema implementa una verificación proactiva de origen antes de instanciar el servicio:
+\begin{lstlisting}[language=TypeScript, caption={Validación de contexto seguro para el micrófono}]
+const isSecureContext = 
+  window.location.protocol === "https:" || 
+  window.location.hostname === "localhost" || 
+  window.location.hostname === "127.0.0.1";
+
+if (!isSecureContext) {
+  showToast("Acceso denegado: El microfono requiere una conexion segura HTTPS.", "warning");
+}
+\end{lstlisting}
+
+Cuando se habilita, un parser gramatical traduce frases como ``Agregar 10 unidades de Aceite Fino'' o ``Registrar salida de 5 harinas'' en llamadas estructuradas que mutan la base de datos de Supabase de manera automatizada.
+
+\newpage
+
+\section{Seguridad de Datos y Modelo de Base de Datos}
+El esquema relacional de la base de datos se almacena en PostgreSQL y se detalla en la Tabla \ref{tab:schema}. La integridad de la información corporativa se blinda a través de Row Level Security (RLS).
+
+\begin{table}[h]
+\centering
+\caption{Esquema Relacional de Tablas Críticas}
+\label{tab:schema}
+\begin{tabular}{@{}llll@{}}
+\toprule
+\textbf{Tabla} & \textbf{Columna Clave} & \textbf{Tipo de Dato} & \textbf{Descripción} \\ \midrule
+\texttt{productos} & \texttt{id} (PK) & \texttt{uuid} & Identificador único \\
+ & \texttt{sku} & \texttt{text} & Código de barra o SKU único \\
+ & \texttt{nombre} & \texttt{text} & Nombre del ítem de inventario \\
+ & \texttt{precio} & \texttt{numeric} & Precio unitario base en Bs \\
+ & \texttt{stock} & \texttt{integer} & Cantidad física disponible \\
+\texttt{movimientos} & \texttt{id} (PK) & \texttt{uuid} & Historial de entradas/salidas \\
+ & \texttt{producto\_id} & \texttt{uuid} (FK) & Relación con la tabla productos \\
+ & \texttt{cantidad} & \texttt{integer} & Delta de cambio físico \\
+ & \texttt{tipo} & \texttt{text} & 'entrada' o 'salida' \\
+\texttt{facturas} & \texttt{id} (PK) & \texttt{uuid} & Registro de ventas facturadas \\
+ & \texttt{total\_bs} & \texttt{numeric} & Sumario financiero en Bs \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Políticas RLS en PostgreSQL}
+Para evitar el acceso malintencionado a la base de datos directamente desde el cliente web mediante inyecciones de token, se aplican políticas estrictas que validan el rol del usuario autenticado contra la función integrada de Supabase `auth.jwt()`.
+
+Un ejemplo de DDL de seguridad aplicado en la base de datos para la tabla de productos es:
+\begin{lstlisting}[language=SQL, caption={Política RLS para modificación de productos}]
+ALTER TABLE productos ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Permitir lectura a usuarios del equipo" 
+ON productos FOR SELECT 
+TO authenticated 
+USING (true);
+
+CREATE POLICY "Solo administradores modifican stock" 
+ON productos FOR ALL 
+TO authenticated 
+USING (
+  exists (
+    select 1 from usuarios_roles 
+    where user_id = auth.uid() and rol = 'administrador'
+  )
+);
+\end{lstlisting}
+
+\newpage
+
+\section{Responsividad y Experiencia Móvil}
+Dado que el objetivo secundario es que el sistema sea completamente funcional en celulares (adaptable a móvil), se realizó una reingeniería de la maquetación CSS. Las tablas tradicionales de HTML suelen colapsar o causar desbordamiento horizontal que destruye el layout en teléfonos móviles de 360px a 480px de ancho.
+
+Para corregir esto, cada tabla de datos clave se encapsuló en un contenedor scrollable con técnicas de overflow controlado en CSS combinadas con el diseño fluido de Flexbox y Grid:
+\begin{lstlisting}[language=HTML, caption={Estructura responsiva para tablas}]
+<div className="w-full overflow-x-auto scrollbar-thin">
+  <table className="min-w-[650px] w-full text-sm">
+    <!-- Encabezados y datos de filas -->
+  </table>
+</div>
+\end{lstlisting}
+Esto permite que, en pantallas táctiles de celulares, el usuario pueda deslizar el dedo lateralmente en la tabla para ver SKU, nombres completos, precios, stock y botones de acción (Editar/Eliminar) de forma natural sin desconfigurar la barra de navegación lateral ni el encabezado global.
+
+\section{Despliegue Serverless en Vercel}
+El despliegue en la nube se automatiza conectando el repositorio de Git a Vercel. Al utilizar TanStack Start con el preset de Vercel en Nitro, el proceso de compilación genera un directorio de salida de compilación unificado llamado `.vercel/output/` que contiene:
+\begin{enumerate}
+    \item \textbf{Static Assets}: Archivos JS, CSS, e imágenes cacheadas localmente para carga inmediata.
+    \item \textbf{Edge Functions}: Rutas del servidor del framework compiladas como funciones de AWS Lambda/Vercel Edge, que procesan llamadas dinámicas a la base de datos de Supabase del lado del servidor de forma instantánea.
+\end{enumerate}
+
+Las variables secretas (`VITE_SUPABASE_URL` y `VITE_SUPABASE_ANON_KEY`) se inyectan en tiempo de ejecución en la nube, garantizando que no se expongan credenciales de base de datos en el historial de código de Git.
+
+\section{Conclusión}
+\textbf{Inventario Amigo} representa una solución moderna, robusta y sumamente adaptada a la dinámica comercial del mercado boliviano. La sinergia entre React, TanStack y Supabase permite contar con una aplicación en tiempo real de nivel empresarial a costo cero de hosting inicial. 
+
+La implementación de dictado por voz abre las puertas a una mayor eficiencia en almacenes, eliminando cuellos de botella operativos, mientras que la responsividad integral y la parametrización de monedas garantizan que el administrador de la empresa pueda ver y actualizar las existencias en tiempo real desde la comodidad de su celular en cualquier parte del mundo.
+
+Como trabajo futuro, se contempla la integración de lectores de códigos de barras basados en la cámara nativa del teléfono móvil a través de librerías WebAssembly y la automatización de pedidos mediante agentes autónomos de inteligencia artificial.
+
+\end{document}

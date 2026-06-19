@@ -3,98 +3,151 @@ import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Send, LifeBuoy, MessageSquare } from "lucide-react";
-import { useState } from "react";
+import { Bot, User, Send, MessageSquare } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/soporte")({
   head: () => ({ meta: [{ title: "Soporte Técnico — Inventario Amigo" }] }),
   component: SoportePage,
 });
 
-function SoportePage() {
-  const [mensaje, setMensaje] = useState("");
-  const [enviado, setEnviado] = useState(false);
+interface ChatMessage {
+  id: string;
+  role: "user" | "bot";
+  content: string;
+}
 
-  const handleSubmit = (e: React.FormEvent) => {
+const INITIAL_MESSAGE: ChatMessage = {
+  id: "msg-0",
+  role: "bot",
+  content: "¡Hola! Soy el asistente virtual de StockPyme. ¿En qué te puedo ayudar hoy? Puedes preguntarme sobre productos, exportaciones, configuración o reportes."
+};
+
+function getBotResponse(input: string): string {
+  const text = input.toLowerCase();
+  
+  if (text.includes("producto") || text.includes("agregar") || text.includes("crear")) {
+    return "Para gestionar productos, dirígete a la sección 'Productos' en el menú lateral. Allí podrás usar el botón 'Nuevo producto' para añadir ítems, o usar los íconos de lápiz y papelera para editar o eliminar los existentes.";
+  }
+  if (text.includes("factura") || text.includes("dolar") || text.includes("boliviano")) {
+    return "En la sección de 'Facturas' ahora puedes crear nuevas facturas. Además, incluimos un botón en la parte superior para cambiar la vista de toda la tabla entre Bolivianos (Bs) y Dólares (USD) usando la tasa de 6.96.";
+  }
+  if (text.includes("pdf") || text.includes("reporte") || text.includes("descargar")) {
+    return "Los reportes se pueden generar en la sección 'Reportes'. Al hacer clic en PDF, el sistema preparará el documento y abrirá el diálogo de impresión para que puedas guardar el reporte como PDF.";
+  }
+  if (text.includes("hola") || text.includes("saludo")) {
+    return "¡Hola! Qué gusto saludarte. ¿Tienes alguna duda sobre cómo usar el sistema?";
+  }
+  
+  return "Gracias por tu consulta. Como soy un prototipo de demostración, mis respuestas son limitadas. Te sugiero intentar preguntarme sobre: 'productos', 'facturas', 'dólares', 'reportes' o 'PDFs'.";
+}
+
+function SoportePage() {
+  const [messages, setMessages] = useState<ChatMessage[]>([INITIAL_MESSAGE]);
+  const [input, setInput] = useState("");
+  const [isTyping, setIsTyping] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [messages, isTyping]);
+
+  const handleSend = (e: React.FormEvent) => {
     e.preventDefault();
-    // Simulate sending message
+    if (!input.trim()) return;
+
+    const userMsg: ChatMessage = { id: Date.now().toString(), role: "user", content: input };
+    setMessages(prev => [...prev, userMsg]);
+    setInput("");
+    setIsTyping(true);
+
     setTimeout(() => {
-      setEnviado(true);
-      setMensaje("");
-    }, 1000);
+      const botMsg: ChatMessage = {
+        id: (Date.now() + 1).toString(),
+        role: "bot",
+        content: getBotResponse(userMsg.content)
+      };
+      setMessages(prev => [...prev, botMsg]);
+      setIsTyping(false);
+    }, 1200); // 1.2s delay to simulate thinking
   };
 
   return (
-    <DashboardLayout title="Soporte Técnico" description="¿Necesitas ayuda? Estamos aquí para asistirte.">
-      <div className="grid gap-6 md:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <LifeBuoy className="h-5 w-5 text-primary" />
-              Contacto Directo
+    <DashboardLayout title="Soporte Técnico" description="¿Necesitas ayuda? Habla con nuestro asistente interactivo.">
+      <div className="grid gap-6 md:grid-cols-[2fr_1fr]">
+        <Card className="flex flex-col h-[600px] overflow-hidden">
+          <CardHeader className="border-b bg-muted/20 py-3">
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Bot className="h-5 w-5 text-primary" />
+              Asistente StockPyme
             </CardTitle>
-            <CardDescription>Envíanos tu consulta y te responderemos a la brevedad.</CardDescription>
           </CardHeader>
-          <CardContent>
-            {enviado ? (
-              <div className="flex flex-col items-center justify-center py-6 text-center">
-                <div className="mb-4 rounded-full bg-emerald-100 p-3 text-emerald-600">
-                  <Send className="h-6 w-6" />
+          <CardContent className="flex-1 overflow-y-auto p-4 space-y-4" ref={scrollRef}>
+            {messages.map((msg) => (
+              <div key={msg.id} className={cn("flex w-full", msg.role === "user" ? "justify-end" : "justify-start")}>
+                <div className={cn(
+                  "flex gap-3 max-w-[80%] rounded-2xl px-4 py-3",
+                  msg.role === "user" 
+                    ? "bg-primary text-primary-foreground rounded-tr-sm" 
+                    : "bg-muted text-foreground rounded-tl-sm"
+                )}>
+                  {msg.role === "bot" && <Bot className="h-5 w-5 shrink-0 mt-0.5" />}
+                  <p className="text-sm leading-relaxed">{msg.content}</p>
+                  {msg.role === "user" && <User className="h-5 w-5 shrink-0 mt-0.5" />}
                 </div>
-                <h3 className="mb-2 text-lg font-medium">¡Mensaje enviado!</h3>
-                <p className="text-sm text-muted-foreground">
-                  Hemos recibido tu consulta. Nuestro equipo de soporte te contactará pronto.
-                </p>
-                <Button variant="outline" className="mt-6" onClick={() => setEnviado(false)}>
-                  Enviar otro mensaje
-                </Button>
               </div>
-            ) : (
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="asunto">Asunto</Label>
-                  <Input id="asunto" placeholder="Ej: Problema con la facturación" required />
+            ))}
+            {isTyping && (
+              <div className="flex w-full justify-start">
+                <div className="bg-muted text-foreground rounded-2xl rounded-tl-sm px-4 py-3 flex items-center gap-2">
+                  <Bot className="h-5 w-5 shrink-0" />
+                  <div className="flex gap-1">
+                    <span className="w-2 h-2 bg-primary/40 rounded-full animate-bounce [animation-delay:-0.3s]"></span>
+                    <span className="w-2 h-2 bg-primary/40 rounded-full animate-bounce [animation-delay:-0.15s]"></span>
+                    <span className="w-2 h-2 bg-primary/40 rounded-full animate-bounce"></span>
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="mensaje">Mensaje</Label>
-                  <textarea 
-                    id="mensaje" 
-                    className="flex min-h-[120px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-                    placeholder="Describe detalladamente tu consulta o problema..."
-                    value={mensaje}
-                    onChange={(e) => setMensaje(e.target.value)}
-                    required
-                  />
-                </div>
-                <Button type="submit" className="w-full">
-                  <Send className="mr-2 h-4 w-4" /> Enviar Mensaje
-                </Button>
-              </form>
+              </div>
             )}
           </CardContent>
+          <div className="p-4 border-t bg-background">
+            <form onSubmit={handleSend} className="flex gap-2">
+              <Input 
+                value={input} 
+                onChange={(e) => setInput(e.target.value)} 
+                placeholder="Escribe tu pregunta aquí..." 
+                className="flex-1"
+                disabled={isTyping}
+              />
+              <Button type="submit" disabled={!input.trim() || isTyping}>
+                <Send className="h-4 w-4" />
+                <span className="sr-only">Enviar</span>
+              </Button>
+            </form>
+          </div>
         </Card>
 
-        <Card className="bg-primary/5 border-primary/10">
+        <Card className="bg-primary/5 border-primary/10 h-fit">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <MessageSquare className="h-5 w-5 text-primary" />
-              Preguntas Frecuentes
+              Temas Sugeridos
             </CardTitle>
+            <CardDescription>Prueba preguntarle al bot sobre:</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="rounded-lg bg-background p-4 shadow-sm">
-              <h4 className="font-medium">¿Cómo añado un nuevo producto?</h4>
-              <p className="mt-1 text-sm text-muted-foreground">Ve a la sección "Productos" y haz clic en el botón superior derecho "Nuevo producto".</p>
-            </div>
-            <div className="rounded-lg bg-background p-4 shadow-sm">
-              <h4 className="font-medium">¿Puedo exportar mi inventario?</h4>
-              <p className="mt-1 text-sm text-muted-foreground">Sí, puedes exportar todo tu catálogo en formato CSV desde la vista de Productos usando el botón "Exportar".</p>
-            </div>
-            <div className="rounded-lg bg-background p-4 shadow-sm">
-              <h4 className="font-medium">¿Cómo vinculo Supabase?</h4>
-              <p className="mt-1 text-sm text-muted-foreground">Asegúrate de agregar tu URL de proyecto y ANON KEY en el archivo .env en la raíz del proyecto.</p>
-            </div>
+          <CardContent className="space-y-3">
+            <Button variant="secondary" className="w-full justify-start text-left h-auto py-3 whitespace-normal" onClick={() => setInput("¿Cómo agregar un nuevo producto?")}>
+              ¿Cómo agregar un nuevo producto?
+            </Button>
+            <Button variant="secondary" className="w-full justify-start text-left h-auto py-3 whitespace-normal" onClick={() => setInput("¿Cómo funciona el cambio a dólares en las facturas?")}>
+              Cambio de moneda en facturas
+            </Button>
+            <Button variant="secondary" className="w-full justify-start text-left h-auto py-3 whitespace-normal" onClick={() => setInput("Quiero descargar un reporte en PDF")}>
+              Descargar reportes PDF
+            </Button>
           </CardContent>
         </Card>
       </div>

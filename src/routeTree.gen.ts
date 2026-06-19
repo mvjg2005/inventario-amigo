@@ -22,6 +22,7 @@ import { Route as FacturasRouteImport } from './routes/facturas'
 import { Route as ConfiguracionRouteImport } from './routes/configuracion'
 import { Route as AlertasRouteImport } from './routes/alertas'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdminLimpiarDatosRouteImport } from './routes/admin.limpiar-datos'
 
 const UsuariosRoute = UsuariosRouteImport.update({
   id: '/usuarios',
@@ -88,6 +89,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminLimpiarDatosRoute = AdminLimpiarDatosRouteImport.update({
+  id: '/admin/limpiar-datos',
+  path: '/admin/limpiar-datos',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -103,6 +109,7 @@ export interface FileRoutesByFullPath {
   '/reportes': typeof ReportesRoute
   '/soporte': typeof SoporteRoute
   '/usuarios': typeof UsuariosRoute
+  '/admin/limpiar-datos': typeof AdminLimpiarDatosRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -118,6 +125,7 @@ export interface FileRoutesByTo {
   '/reportes': typeof ReportesRoute
   '/soporte': typeof SoporteRoute
   '/usuarios': typeof UsuariosRoute
+  '/admin/limpiar-datos': typeof AdminLimpiarDatosRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -134,6 +142,7 @@ export interface FileRoutesById {
   '/reportes': typeof ReportesRoute
   '/soporte': typeof SoporteRoute
   '/usuarios': typeof UsuariosRoute
+  '/admin/limpiar-datos': typeof AdminLimpiarDatosRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -151,6 +160,7 @@ export interface FileRouteTypes {
     | '/reportes'
     | '/soporte'
     | '/usuarios'
+    | '/admin/limpiar-datos'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -166,6 +176,7 @@ export interface FileRouteTypes {
     | '/reportes'
     | '/soporte'
     | '/usuarios'
+    | '/admin/limpiar-datos'
   id:
     | '__root__'
     | '/'
@@ -181,6 +192,7 @@ export interface FileRouteTypes {
     | '/reportes'
     | '/soporte'
     | '/usuarios'
+    | '/admin/limpiar-datos'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -197,6 +209,7 @@ export interface RootRouteChildren {
   ReportesRoute: typeof ReportesRoute
   SoporteRoute: typeof SoporteRoute
   UsuariosRoute: typeof UsuariosRoute
+  AdminLimpiarDatosRoute: typeof AdminLimpiarDatosRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -292,6 +305,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/limpiar-datos': {
+      id: '/admin/limpiar-datos'
+      path: '/admin/limpiar-datos'
+      fullPath: '/admin/limpiar-datos'
+      preLoaderRoute: typeof AdminLimpiarDatosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -309,6 +329,7 @@ const rootRouteChildren: RootRouteChildren = {
   ReportesRoute: ReportesRoute,
   SoporteRoute: SoporteRoute,
   UsuariosRoute: UsuariosRoute,
+  AdminLimpiarDatosRoute: AdminLimpiarDatosRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

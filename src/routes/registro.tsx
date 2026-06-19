@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Package2 } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Package2, AlertCircle, CheckCircle, Eye, EyeOff } from "lucide-react";
 
 export const Route = createFileRoute("/registro")({
   component: RegistroPage,
@@ -16,16 +17,47 @@ function RegistroPage() {
   const [nombre, setNombre] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setSuccess(false);
+    setLoading(true);
+
     try {
-      await registerFn({ data: { nombre, email, password } });
-      router.invalidate();
+      const result = await registerFn({ data: { nombre, email, password } } as any);
+      setSuccess(true);
+      
+      // Limpiar formulario
+      setNombre("");
+      setEmail("");
+      setPassword("");
+      
+      // Redirigir al dashboard después de 2 segundos
+      setTimeout(() => {
+        router.navigate({ to: "/" });
+      }, 2000);
     } catch (err: any) {
-      setError(err.message || "Error al registrar la cuenta");
+      const errorMsg = err.message || "Error al registrar la cuenta";
+      
+      // Mensajes más amigables para errores comunes
+      if (errorMsg.includes("rate_limit") || errorMsg.includes("58 seconds")) {
+        setError("⏱️ Espera 60 segundos antes de intentar de nuevo con este email");
+      } else if (errorMsg.includes("already exists") || errorMsg.includes("User already registered")) {
+        setError("Este email ya está registrado. Usa otro email o intenta con login");
+      } else if (errorMsg.includes("invalid email")) {
+        setError("El formato del email no es válido");
+      } else if (errorMsg.includes("password")) {
+        setError("La contraseña debe tener al menos 6 caracteres");
+      } else {
+        setError(errorMsg);
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -50,6 +82,22 @@ function RegistroPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
+            {success && (
+              <Alert className="mb-4 border-green-200 bg-green-50">
+                <CheckCircle className="h-4 w-4 text-green-600" />
+                <AlertDescription className="text-green-800">
+                  ✅ Cuenta creada exitosamente. Redirigiendo...
+                </AlertDescription>
+              </Alert>
+            )}
+            
+            {error && (
+              <Alert variant="destructive" className="mb-4">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
+            
             <form onSubmit={handleRegister} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="nombre">Nombre completo</Label>
@@ -58,6 +106,7 @@ function RegistroPage() {
                   placeholder="Tu nombre"
                   value={nombre}
                   onChange={(e) => setNombre(e.target.value)}
+                  disabled={loading}
                   required
                 />
               </div>
@@ -69,24 +118,45 @@ function RegistroPage() {
                   placeholder="m@ejemplo.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  disabled={loading}
                   required
                 />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="password">Contraseña</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="Mínimo 6 caracteres"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  minLength={6}
-                />
+                <div className="relative">
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Mínimo 6 caracteres"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    disabled={loading}
+                    required
+                    minLength={6}
+                    className="pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50"
+                    disabled={loading}
+                    title={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
+                  </button>
+                </div>
               </div>
-              {error && <p className="text-sm text-destructive">{error}</p>}
-              <Button type="submit" className="w-full">
-                Crear cuenta
+              <Button 
+                type="submit" 
+                className="w-full"
+                disabled={loading}
+              >
+                {loading ? "Creando cuenta..." : "Crear cuenta"}
               </Button>
             </form>
           </CardContent>
