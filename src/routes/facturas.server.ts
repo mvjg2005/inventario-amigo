@@ -1,8 +1,11 @@
 import { createServerFn } from "@tanstack/react-start";
 import { getAuthSupabase, getCurrentUserId } from "@/lib/supabase";
+import { DEMO_USER_ID, demoFacturas } from "@/lib/demoMode";
 
 export const getFacturasFn = createServerFn({ method: "GET" }).handler(async () => {
   const userId = await getCurrentUserId();
+  if (userId === DEMO_USER_ID) return [...demoFacturas];
+
   const client = getAuthSupabase();
 
   const { data, error } = await client
@@ -17,6 +20,8 @@ export const getFacturasFn = createServerFn({ method: "GET" }).handler(async () 
 
 export const createFacturaFn = createServerFn({ method: "POST" }).handler(async (ctx: any) => {
   const userId = await getCurrentUserId();
+  if (userId === DEMO_USER_ID) return { success: true };
+
   const client = getAuthSupabase();
 
   // Generar número de factura secuencial

@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 // @ts-ignore
 import { getCookie } from "@tanstack/react-start/server";
+import { DEMO_USER, DEMO_USER_ID, isDemoSession } from "./demoMode";
 
 const supabaseUrl = process.env.VITE_SUPABASE_URL || import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = process.env.VITE_SUPABASE_ANON_KEY || import.meta.env.VITE_SUPABASE_ANON_KEY;
@@ -35,6 +36,7 @@ export async function getCurrentUser() {
   try {
     const sessionCookie = getCookie(COOKIE_NAME);
     if (!sessionCookie) return null;
+    if (isDemoSession(sessionCookie)) return DEMO_USER as any;
     
     const { data: { user }, error } = await supabase.auth.getUser(sessionCookie);
     
@@ -52,6 +54,9 @@ export async function getCurrentUser() {
  * Lanza error si no hay usuario autenticado
  */
 export async function getCurrentUserId(): Promise<string> {
+  const sessionCookie = getCookie(COOKIE_NAME);
+  if (isDemoSession(sessionCookie)) return DEMO_USER_ID;
+
   const user = await getCurrentUser();
   if (!user) {
     throw new Error("Usuario no autenticado");

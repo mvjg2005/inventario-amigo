@@ -2,12 +2,23 @@ import { createServerFn } from "@tanstack/react-start";
 // @ts-ignore
 import { setCookie, getCookie, deleteCookie } from "@tanstack/react-start/server";
 import { supabase } from "./supabase";
+import { DEMO_SESSION_TOKEN, DEMO_USER, isDemoCredentials, isDemoSession } from "./demoMode";
 
 const COOKIE_NAME = "auth_session";
 
 // @ts-ignore
 export const loginFn = createServerFn({ method: "POST" }).handler(async (ctx: any) => {
     const { email, password } = ctx.data;
+    if (isDemoCredentials(email, password)) {
+      setCookie(COOKIE_NAME, DEMO_SESSION_TOKEN, {
+        path: "/",
+        httpOnly: true,
+        maxAge: 60 * 60 * 24 * 7
+      });
+
+      return { success: true, user: DEMO_USER };
+    }
+
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     
     if (error) throw new Error(error.message);
@@ -54,6 +65,7 @@ export const getAuthSessionFn = createServerFn({ method: "GET" })
   .handler(async () => {
     const sessionCookie = getCookie(COOKIE_NAME);
     if (!sessionCookie) return null;
+    if (isDemoSession(sessionCookie)) return DEMO_USER;
     
     // verify the token
     const { data: { user }, error } = await supabase.auth.getUser(sessionCookie);

@@ -1,8 +1,11 @@
 import { createServerFn } from "@tanstack/react-start";
 import { getAuthSupabase, getCurrentUserId } from "@/lib/supabase";
+import { DEMO_USER_ID, demoTeamMembers } from "@/lib/demoMode";
 
 export const getTeamMembersFn = createServerFn({ method: "GET" }).handler(async () => {
   const userId = await getCurrentUserId();
+  if (userId === DEMO_USER_ID) return [...demoTeamMembers];
+
   const client = getAuthSupabase();
 
   const { data, error } = await client
@@ -17,6 +20,8 @@ export const getTeamMembersFn = createServerFn({ method: "GET" }).handler(async 
 
 export const inviteTeamMemberFn = createServerFn({ method: "POST" }).handler(async (ctx: any) => {
   const userId = await getCurrentUserId();
+  if (userId === DEMO_USER_ID) return { success: true };
+
   const client = getAuthSupabase();
 
   // Verificar duplicado
@@ -43,6 +48,8 @@ export const inviteTeamMemberFn = createServerFn({ method: "POST" }).handler(asy
 
 export const deleteTeamMemberFn = createServerFn({ method: "POST" }).handler(async (ctx: any) => {
   const userId = await getCurrentUserId();
+  if (userId === DEMO_USER_ID) return { success: true };
+
   const client = getAuthSupabase();
 
   const { error } = await client

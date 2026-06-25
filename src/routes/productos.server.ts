@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { getAuthSupabase, getCurrentUserId } from "@/lib/supabase";
+import { DEMO_USER_ID, demoProducts } from "@/lib/demoMode";
 
 /**
  * Obtiene todos los productos del usuario autenticado
@@ -8,6 +9,8 @@ import { getAuthSupabase, getCurrentUserId } from "@/lib/supabase";
 export const getProductsFn = createServerFn({ method: "GET" }).handler(async () => {
   try {
     const userId = await getCurrentUserId();
+    if (userId === DEMO_USER_ID) return [...demoProducts];
+
     const authClient = getAuthSupabase();
     
     const { data, error } = await authClient
@@ -31,6 +34,8 @@ export const getProductsFn = createServerFn({ method: "GET" }).handler(async () 
 export const createProductFn = createServerFn({ method: "POST" }).handler(async (ctx: any) => {
   try {
     const userId = await getCurrentUserId();
+    if (userId === DEMO_USER_ID) return [{ id: Date.now().toString(), ...ctx.data, user_id: userId }];
+
     const authClient = getAuthSupabase();
     
     const { data, error } = await authClient
@@ -63,6 +68,8 @@ export const createProductFn = createServerFn({ method: "POST" }).handler(async 
 export const updateProductFn = createServerFn({ method: "POST" }).handler(async (ctx: any) => {
   try {
     const userId = await getCurrentUserId();
+    if (userId === DEMO_USER_ID) return [{ ...ctx.data, user_id: userId }];
+
     const authClient = getAuthSupabase();
     const { id, ...updateData } = ctx.data;
     
@@ -92,6 +99,8 @@ export const updateProductFn = createServerFn({ method: "POST" }).handler(async 
 export const deleteProductFn = createServerFn({ method: "POST" }).handler(async (ctx: any) => {
   try {
     const userId = await getCurrentUserId();
+    if (userId === DEMO_USER_ID) return { success: true };
+
     const authClient = getAuthSupabase();
     const { id } = ctx.data;
     
@@ -116,6 +125,8 @@ export const deleteProductFn = createServerFn({ method: "POST" }).handler(async 
 export const deleteAllUserProductsFn = createServerFn({ method: "POST" }).handler(async () => {
   try {
     const userId = await getCurrentUserId();
+    if (userId === DEMO_USER_ID) return { success: true, message: "Datos demo limpiados temporalmente" };
+
     const authClient = getAuthSupabase();
     
     const { error } = await authClient
