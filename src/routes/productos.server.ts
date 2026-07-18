@@ -1,24 +1,20 @@
 import { createServerFn } from "@tanstack/react-start";
 import { getAuthSupabase, getCurrentUserId } from "@/lib/supabase";
-import { DEMO_USER_ID, demoProducts } from "@/lib/demoMode";
 
 /**
- * Obtiene todos los productos del usuario autenticado
- * Solo retorna productos pertenecientes al usuario actual
+ * Obtiene todos los productos del usuario autenticado (Supabase real).
  */
 export const getProductsFn = createServerFn({ method: "GET" }).handler(async () => {
   try {
     const userId = await getCurrentUserId();
-    if (userId === DEMO_USER_ID) return [...demoProducts];
-
     const authClient = getAuthSupabase();
-    
+
     const { data, error } = await authClient
-      .from('productos')
-      .select('*')
-      .eq('user_id', userId)
-      .order('id', { ascending: false });
-      
+      .from("productos")
+      .select("*")
+      .eq("user_id", userId)
+      .order("id", { ascending: false });
+
     if (error) throw new Error(error.message);
     return data || [];
   } catch (error) {
@@ -28,29 +24,32 @@ export const getProductsFn = createServerFn({ method: "GET" }).handler(async () 
 });
 
 /**
- * Crea un nuevo producto para el usuario autenticado
- * Automáticamente asigna el user_id del usuario actual
+ * Crea un nuevo producto para el usuario autenticado.
  */
 export const createProductFn = createServerFn({ method: "POST" }).handler(async (ctx: any) => {
   try {
     const userId = await getCurrentUserId();
-    if (userId === DEMO_USER_ID) return [{ id: Date.now().toString(), ...ctx.data, user_id: userId }];
-
     const authClient = getAuthSupabase();
-    
+
+    const precio = Number(ctx.data?.precio);
+    if (!Number.isFinite(precio) || precio < 0) {
+      throw new Error("El precio del producto es inválido.");
+    }
+
     const { data, error } = await authClient
-      .from('productos')
+      .from("productos")
       .insert([
         {
           ...ctx.data,
+          precio,
           user_id: userId,
-          created_at: new Date().toISOString()
-        }
+          created_at: new Date().toISOString(),
+        },
       ])
       .select();
-      
+
     if (error) {
-      if (error.code === '23505') {
+      if (error.code === "23505") {
         throw new Error("Ya existe un producto con este SKU.");
       }
       throw new Error(error.message);
@@ -63,25 +62,31 @@ export const createProductFn = createServerFn({ method: "POST" }).handler(async 
 });
 
 /**
- * Actualiza un producto existente
+ * Actualiza un producto existente.
  */
 export const updateProductFn = createServerFn({ method: "POST" }).handler(async (ctx: any) => {
   try {
     const userId = await getCurrentUserId();
-    if (userId === DEMO_USER_ID) return [{ ...ctx.data, user_id: userId }];
-
     const authClient = getAuthSupabase();
     const { id, ...updateData } = ctx.data;
-    
+
+    if (updateData.precio != null) {
+      const precio = Number(updateData.precio);
+      if (!Number.isFinite(precio) || precio < 0) {
+        throw new Error("El precio del producto es inválido.");
+      }
+      updateData.precio = precio;
+    }
+
     const { data, error } = await authClient
-      .from('productos')
+      .from("productos")
       .update(updateData)
-      .eq('id', id)
-      .eq('user_id', userId) // Doble seguridad
+      .eq("id", id)
+      .eq("user_id", userId)
       .select();
-      
+
     if (error) {
-      if (error.code === '23505') {
+      if (error.code === "23505") {
         throw new Error("Ya existe otro producto con este SKU.");
       }
       throw new Error(error.message);
@@ -94,22 +99,20 @@ export const updateProductFn = createServerFn({ method: "POST" }).handler(async 
 });
 
 /**
- * Elimina un producto específico
+ * Elimina un producto específico.
  */
 export const deleteProductFn = createServerFn({ method: "POST" }).handler(async (ctx: any) => {
   try {
     const userId = await getCurrentUserId();
-    if (userId === DEMO_USER_ID) return { success: true };
-
     const authClient = getAuthSupabase();
     const { id } = ctx.data;
-    
+
     const { error } = await authClient
-      .from('productos')
+      .from("productos")
       .delete()
-      .eq('id', id)
-      .eq('user_id', userId);
-      
+      .eq("id", id)
+      .eq("user_id", userId);
+
     if (error) throw new Error(error.message);
     return { success: true };
   } catch (error: any) {
@@ -119,21 +122,15 @@ export const deleteProductFn = createServerFn({ method: "POST" }).handler(async 
 });
 
 /**
- * Elimina todos los productos del usuario autenticado
- * (Útil para limpiar datos de prueba)
+ * Elimina todos los productos del usuario autenticado.
  */
 export const deleteAllUserProductsFn = createServerFn({ method: "POST" }).handler(async () => {
   try {
     const userId = await getCurrentUserId();
-    if (userId === DEMO_USER_ID) return { success: true, message: "Datos demo limpiados temporalmente" };
-
     const authClient = getAuthSupabase();
-    
-    const { error } = await authClient
-      .from('productos')
-      .delete()
-      .eq('user_id', userId);
-      
+
+    const { error } = await authClient.from("productos").delete().eq("user_id", userId);
+
     if (error) throw new Error(error.message);
     return { success: true, message: "Todos los productos han sido eliminados" };
   } catch (error: any) {

@@ -28,6 +28,13 @@ import { createFacturaFn } from "@/routes/facturas.server";
 import { createMovimientoFn } from "@/routes/movimientos.server";
 import { createOrdenFn } from "@/routes/ordenes.server";
 import { imprimirFactura } from "@/lib/imprimirFactura";
+import {
+  extractPrice,
+  generarSku,
+  parseLineaProducto,
+  parseMovimientoVoice,
+  wordsToDigits,
+} from "@/lib/voiceParse";
 
 interface Message {
   id: string;
@@ -63,6 +70,37 @@ function detectarCategoria(texto: string): string {
   return "General";
 }
 
+/** Empareja nombre dictado con catálogo (exacto > incluye). */
+function matchProducto(nombre: string, productosExistentes: any[]) {
+  const n = nombre.toLowerCase().trim();
+  if (!n) return null;
+  const exact = productosExistentes.find((p) => p.nombre?.toLowerCase() === n);
+  if (exact) return exact;
+  const partial = productosExistentes.filter(
+    (p) => p.nombre?.toLowerCase().includes(n) || n.includes(p.nombre?.toLowerCase() ?? "")
+  );
+  if (partial.length === 1) return partial[0];
+  // preferir el de nombre más corto (más específico)
+  if (partial.length > 1) {
+    return [...partial].sort((a, b) => a.nombre.length - b.nombre.length)[0];
+  }
+  return null;
+}
+
+/**
+ * Resuelve precio real:
+ * 1) precio dicho por voz
+ * 2) precio del catálogo si el producto existe
+ * 3) 0 (el usuario debe completarlo — nunca inventamos 5/10/50)
+ */
+function resolverPrecio(precioVoz: number, precioDetectado: boolean, catalogPrecio?: number | null) {
+  if (precioDetectado && precioVoz > 0) return { precio: precioVoz, fuente: "voz" as const };
+  if (catalogPrecio != null && Number(catalogPrecio) > 0) {
+    return { precio: Number(catalogPrecio), fuente: "catalogo" as const };
+  }
+  return { precio: 0, fuente: "pendiente" as const };
+}
+
 export function AiChatBot() {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
@@ -70,7 +108,7 @@ export function AiChatBot() {
     {
       id: "welcome",
       sender: "assistant",
-      text: "¡Hola! Soy Stocky 🤖, tu asistente de inventario inteligente.\n\nPuedo registrar compras, ventas, facturas o crear órdenes de proveedores. ¿Qué deseas hacer hoy?\n\n*Ejemplos:*\n• *\"Vendí 6 huevos y una mayonesa al cliente Juan Perez\"*\n• *\"Compré Coca Cola que está ingresando a un precio de 8 Bs\"*\n• *\"Crear orden al proveedor PIL de 15 items por un total de 400 Bs\"*",
+      text: "¡Hola! Soy Stocky 🤖, tu asistente de inventario.\n\nRegistro compras, ventas y órdenes con precio real (sin valores inventados).\n\n*Ejemplos de dictado:*\n• *\"Compré 10 arroz a 50 bolivianos\"*\n• *\"Vendí 6 panes a 2 bs\"*\n• *\"Compré coca cola a un precio de 8 bs\"*\n• *\"Vendí 3 leches y 2 yogures al cliente Juan\"*",
       timestamp: new Date()
     }
   ]);
@@ -104,99 +142,12 @@ export function AiChatBot() {
 
   const parseComando = (texto: string, productosExistentes: any[]): { type: "factura" | "movimiento" | "orden" | "unknown"; data?: any } => {
     const cleanText = texto.toLowerCase().trim();
-    
-    // 1. INTENTO FACTURA
-    const isFactura = /factura|cliente|compr[oó]|vendi|vend[íi]|venta/i.test(cleanText);
-    if (isFactura) {
-      let cliente = "Cliente General";
-      const clienteMatch = cleanText.match(/(?:cliente|para)\s+([a-z\s]+?)(?:\s+me\s+compro|\s+compro|\s+compró|\s+compr|:|$|\d+)/i);
-      if (clienteMatch && clienteMatch[1]) {
-        cliente = clienteMatch[1].trim();
-        cliente = cliente.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
-      }
-      
-      const partes = cleanText.split(/,|\by\b|\be\b|\bcon\b/);
-      const detalles: any[] = [];
-      let totalBs = 0;
-      
-      partes.forEach(part => {
-        const p = part.trim();
-        if (!p) return;
-        
-        let cantidad = 1;
-        const numMatch = p.match(/\d+/);
-        if (numMatch) {
-          cantidad = parseInt(numMatch[0]);
-        } else if (/\b(un|una|uno)\b/i.test(p)) {
-          cantidad = 1;
-        } else if (/\b(dos)\b/i.test(p)) {
-          cantidad = 2;
-        } else if (/\b(tres)\b/i.test(p)) {
-          cantidad = 3;
-        } else if (/\b(cuatro)\b/i.test(p)) {
-          cantidad = 4;
-        } else if (/\b(cinco)\b/i.test(p)) {
-          cantidad = 5;
-        } else if (/\b(seis)\b/i.test(p)) {
-          cantidad = 6;
-        } else if (/\b(diez)\b/i.test(p)) {
-          cantidad = 10;
-        }
-        
-        let prodNombre = p
-          .replace(/^\d+/g, "")
-          .replace(/\b(un|una|uno|unos|unas|dos|tres|cuatro|cinco|seis|diez|docena|docenas|de|del|el|la|los|las)\b/gi, "")
-          .replace(/\b(bolivianos|bs|boliviano|pesos|dolares|usd|compro|compró|cliente|factura|vendi|vendió)\b/gi, "")
-          .replace(/\s+/g, " ")
-          .trim();
-        
-        if (prodNombre.length < 2) return;
-        prodNombre = prodNombre.charAt(0).toUpperCase() + prodNombre.slice(1);
-        
-        // Buscar coincidencia en productos existentes
-        const matches = productosExistentes.filter(prod => 
-          prod.nombre.toLowerCase().includes(prodNombre.toLowerCase()) || 
-          prodNombre.toLowerCase().includes(prod.nombre.toLowerCase())
-        );
-        
-        let matchedProd = matches.length > 0 ? matches[0] : null;
-        const exactMatch = matches.find(prod => prod.nombre.toLowerCase() === prodNombre.toLowerCase());
-        if (exactMatch) matchedProd = exactMatch;
-        
-        const precioUnitario = matchedProd ? Number(matchedProd.precio) : 5.00;
-        const sku = matchedProd ? matchedProd.sku : prodNombre.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 5) + "-" + Math.floor(Math.random() * 900 + 100);
-        const subtotal = cantidad * precioUnitario;
-        totalBs += subtotal;
-        
-        detalles.push({
-          producto: matchedProd ? matchedProd.nombre : prodNombre,
-          sku,
-          cantidad,
-          precio_unitario: precioUnitario,
-          subtotal,
-          existe: !!matchedProd,
-          originalId: matchedProd ? matchedProd.id : null,
-          currentStock: matchedProd ? matchedProd.stock : 0
-        });
-      });
-      
-      if (detalles.length === 0) return { type: "unknown" };
-      
-      return {
-        type: "factura",
-        data: {
-          cliente,
-          total_bs: totalBs,
-          estado: "Pagada",
-          detalles
-        }
-      };
-    }
+    const digitText = wordsToDigits(texto);
 
-    // 2. INTENTO ORDEN
-    const isOrden = /orden|proveedor|pedido|pedi|pedí|de don|del proveedor|comprand|comprando/i.test(cleanText);
+    // 1. ORDEN DE COMPRA (prioridad alta — palabras de proveedor/pedido)
+    const isOrden = /orden|proveedor|pedido|pedi|pedí|de don|del proveedor/i.test(cleanText)
+      || /(?:crear|nueva)\s+orden/i.test(cleanText);
     if (isOrden) {
-      // Extraer proveedor - puede ser "de don Juan", "al proveedor PIL", "de mi proveedor X"
       let proveedor = "Proveedor General";
       const provPatterns = [
         /(?:de don|de mi proveedor|del proveedor|al proveedor|proveedor)\s+([a-záéíóúñ][a-záéíóúñ\s]{1,30}?)(?:\s+(?:con|de|todo|por|$))/i,
@@ -211,24 +162,14 @@ export function AiChatBot() {
         }
       }
 
-      // Parsear líneas de producto con el patrón:
-      // "N paquetes de PRODUCTO de M unidades a P bs"
-      // "N paquetes de PRODUCTO (M unidades) a P bs"
-      // "N PRODUCTO a P bs"
       const lineasOrden: any[] = [];
-      // Dividir por comas, "luego", "también", "y además"
-      const segmentos = cleanText.split(/,|\bluego\b|\btambién\b|\bademás\b|\by además\b/i);
+      const segmentos = digitText.split(/,|\bluego\b|\btambien\b|\bademas\b|\by ademas\b/i);
 
       segmentos.forEach(seg => {
         const s = seg.trim();
-        // Patrón: N paquetes de PROD de M unidades a P bs
         const pat1 = /(\d+)\s*paquetes?\s+de\s+([a-záéíóúñ\s]+?)\s+de\s+(\d+)\s*unidades?\s+a\s+(\d+(?:[.,]\d+)?)\s*(?:bs|bolivianos?)?/i;
-        // Patrón: N paquetes de PROD (M unidades) a P bs
         const pat2 = /(\d+)\s*paquetes?\s+de\s+([a-záéíóúñ\s]+?)\s*\(?\s*(\d+)\s*unidades?\s*\)?\s+a\s+(\d+(?:[.,]\d+)?)\s*(?:bs|bolivianos?)?/i;
-        // Patrón: N paquetes de PROD a P bs (sin unidades)
         const pat3 = /(\d+)\s*paquetes?\s+de\s+([a-záéíóúñ\s]+?)\s+a\s+(\d+(?:[.,]\d+)?)\s*(?:bs|bolivianos?)?/i;
-        // Patrón: N PROD a P bs
-        const pat4 = /(\d+)\s+(?:de\s+)?([a-záéíóúñ][a-záéíóúñ\s]{2,}?)\s+a\s+(\d+(?:[.,]\d+)?)\s*(?:bs|bolivianos?)?/i;
 
         let m = s.match(pat1) || s.match(pat2);
         if (m) {
@@ -250,24 +191,26 @@ export function AiChatBot() {
           });
           return;
         }
-        m = s.match(pat4);
-        if (m) {
+        // Línea simple con precio: "15 coca cola a 8 bs"
+        const linea = parseLineaProducto(s);
+        if (linea.nombre.length >= 2) {
           lineasOrden.push({
-            producto: m[2].trim().split(" ").map((w: string) => w.charAt(0).toUpperCase() + w.slice(1)).join(" "),
-            paquetes: parseInt(m[1]),
+            producto: linea.nombre,
+            paquetes: linea.cantidad,
             unidadesPorPaquete: 1,
-            precioPorPaquete: parseFloat(m[3].replace(",", ".")),
+            precioPorPaquete: linea.precio,
           });
         }
       });
 
-      // Si no detectó líneas, crear una genérica
       if (lineasOrden.length === 0) {
-        let totalFallback = 0;
-        const totalMatch = cleanText.match(/(?:total|valor|por|de)\s+(\d+(?:[.,]\d+)?)\s*(?:bs|bolivianos?|pesos)?/i) ||
-          cleanText.match(/(\d+(?:[.,]\d+)?)\s*(?:bs|bolivianos?|boliviano)/i);
-        if (totalMatch?.[1]) totalFallback = parseFloat(totalMatch[1].replace(",", "."));
-        lineasOrden.push({ producto: "Producto General", paquetes: 1, unidadesPorPaquete: 1, precioPorPaquete: totalFallback });
+        const priceHit = extractPrice(texto);
+        lineasOrden.push({
+          producto: "Producto General",
+          paquetes: 1,
+          unidadesPorPaquete: 1,
+          precioPorPaquete: priceHit?.value ?? 0,
+        });
       }
 
       const totalOrden = lineasOrden.reduce((acc, l) => acc + l.paquetes * l.precioPorPaquete, 0);
@@ -285,44 +228,105 @@ export function AiChatBot() {
       };
     }
 
-    // 3. INTENTO MOVIMIENTO
-    const esEntrada = /compr[eé]|entr[oó]|recibi|ingres[oó]|lleg[oó]/.test(cleanText);
-    const esSalida = /vend[íi]|vend[ée]|sali[oó]|despach[aó]|retir[oó]|gasto|salida/.test(cleanText);
-    
-    if (esEntrada || esSalida) {
-      const tipo: "entrada" | "salida" = esEntrada ? "entrada" : "salida";
-      
-      const numeros = cleanText.match(/\d+(?:[.,]\d+)?/g) ?? [];
-      const cantidad = numeros.length > 0 ? parseInt(numeros[0] ?? "1") : 1;
-      const precio = numeros.length > 1 ? parseFloat((numeros[numeros.length - 1] ?? "0").replace(",", ".")) : 0;
-      
-      let producto = cleanText
-        .replace(/^(vend[íi]|vend[ée]|compr[eé]|entr[oó]|sali[oó]|recib[íi]|despacha[oó]|ingreso|ingresó|salida|entrada|gasto)\s+/i, "")
-        .replace(/\d+(?:[.,]\d+)?\s*(bolivianos?|bs\.?|pesos?|dólares?|usd)?\s*$/i, "")
-        .replace(/\s+(a|por|precio|cada|al)\s+.*$/i, "")
-        .replace(/^\d+(?:[.,]\d+)?\s*(unidades?|kilos?|kg|litros?|cajas?|bolsas?|paquetes?|docenas?)?\s*/i, "")
-        .replace(/\s+/g, " ")
-        .trim();
-        
-      if (producto.length >= 2) {
-        producto = producto.split(" ").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
-        
-        const matches = productosExistentes.filter(prod => prod.nombre.toLowerCase() === producto.toLowerCase());
-        const sku = matches.length > 0 ? matches[0].sku : producto.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 6) + "-" + Math.floor(Math.random() * 900 + 100);
-        const categoria = matches.length > 0 ? matches[0].categoria : detectarCategoria(producto);
-        
+    // 2. FACTURA / VENTA (explícita o venta a cliente / multi-ítem)
+    const mencionaCliente = /(?:cliente|para)\s+[a-záéíóúñ]/i.test(cleanText);
+    const mencionaFactura = /factura|comprobante|ticket/i.test(cleanText);
+    const esVenta = /vend[iíeé]|venta/i.test(cleanText);
+    const multiItem = /,|\by\b/.test(cleanText) && esVenta;
+    const isFactura = mencionaFactura || mencionaCliente || multiItem
+      || (esVenta && /cliente|para\s+[a-z]/i.test(cleanText));
+
+    // Venta simple de 1 producto → preferir movimiento (más control de precio/stock)
+    // a menos que diga factura/cliente
+    if (isFactura || (esVenta && (mencionaFactura || mencionaCliente || multiItem))) {
+      let cliente = "Cliente General";
+      const clienteMatch = cleanText.match(/(?:cliente|para)\s+([a-záéíóúñ\s]+?)(?:\s+me\s+compro|\s+compro|\s+compró|\s+compr|:|$|\d+)/i);
+      if (clienteMatch?.[1]) {
+        cliente = clienteMatch[1].trim().split(" ").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+      }
+
+      // Quitar prefijo de cliente del texto de productos
+      let productosText = digitText
+        .replace(/(?:cliente|para)\s+[a-záéíóúñ\s]+?(?=\s+\d|\s+un|\s+una|,|$)/i, " ")
+        .replace(/\b(factura|comprobante|ticket|vendi|vende|vendio|venta)\b/gi, " ");
+
+      const partes = productosText.split(/,|\by\b|\be\b/).map(p => p.trim()).filter(Boolean);
+      const detalles: any[] = [];
+      let totalBs = 0;
+      let preciosPendientes = 0;
+
+      for (const part of partes) {
+        const linea = parseLineaProducto(part);
+        if (linea.nombre.length < 2) continue;
+
+        const matchedProd = matchProducto(linea.nombre, productosExistentes);
+        const { precio: precioUnitario, fuente } = resolverPrecio(
+          linea.precio,
+          linea.precioDetectado,
+          matchedProd?.precio
+        );
+        if (fuente === "pendiente") preciosPendientes++;
+
+        const sku = matchedProd ? matchedProd.sku : generarSku(linea.nombre);
+        const subtotal = linea.cantidad * precioUnitario;
+        totalBs += subtotal;
+
+        detalles.push({
+          producto: matchedProd ? matchedProd.nombre : linea.nombre,
+          sku,
+          cantidad: linea.cantidad,
+          precio_unitario: precioUnitario,
+          subtotal,
+          existe: !!matchedProd,
+          originalId: matchedProd ? matchedProd.id : null,
+          currentStock: matchedProd ? matchedProd.stock : 0,
+          precioFuente: fuente,
+        });
+      }
+
+      if (detalles.length === 0) {
+        // caer a movimiento simple
+      } else {
         return {
-          type: "movimiento",
+          type: "factura",
           data: {
-            producto,
-            sku,
-            tipo,
-            cantidad,
-            precio,
-            categoria
+            cliente,
+            total_bs: totalBs,
+            estado: "Pagada",
+            detalles,
+            preciosPendientes,
           }
         };
       }
+    }
+
+    // 3. MOVIMIENTO (compra/entrada/salida/venta simple)
+    const mov = parseMovimientoVoice(texto);
+    if (mov) {
+      const matchedProd = matchProducto(mov.producto, productosExistentes);
+      const { precio, fuente } = resolverPrecio(
+        mov.precio,
+        mov.precioDetectado,
+        matchedProd?.precio
+      );
+      const sku = matchedProd ? matchedProd.sku : generarSku(mov.producto);
+      const categoria = matchedProd?.categoria || detectarCategoria(mov.producto);
+
+      return {
+        type: "movimiento",
+        data: {
+          producto: matchedProd ? matchedProd.nombre : mov.producto,
+          sku,
+          tipo: mov.tipo,
+          cantidad: mov.cantidad,
+          precio,
+          precioFuente: fuente,
+          categoria,
+          productId: matchedProd?.id ?? null,
+          currentStock: matchedProd?.stock ?? 0,
+          existe: !!matchedProd,
+        }
+      };
     }
 
     return { type: "unknown" };
@@ -408,23 +412,49 @@ export function AiChatBot() {
     }
 
     const rec = new SpeechRec();
-    rec.lang = "es-ES";
-    rec.interimResults = false;
-    rec.maxAlternatives = 1;
+    // es-BO mejora números y moneda boliviana; fallback es-ES
+    rec.lang = "es-BO";
+    rec.interimResults = true;
+    rec.maxAlternatives = 3;
+    rec.continuous = false;
     recognitionRef.current = rec;
 
+    let finalTranscript = "";
+    let sent = false;
     setIsListening(true);
-    toast.info("Escuchando tu voz...");
+    toast.info('Escuchando… Di p.ej.: "Compré 10 arroz a 50 bolivianos"');
+
+    const finishWith = (text: string) => {
+      const t = text.trim();
+      if (!t || sent) return;
+      sent = true;
+      setIsListening(false);
+      setInputValue(t);
+      try { rec.stop(); } catch { /* ignore */ }
+      handleSend(t);
+    };
 
     rec.onresult = (event: any) => {
-      const resultText = event.results[0][0].transcript;
-      setInputValue(resultText);
-      setIsListening(false);
-      handleSend(resultText);
+      let interim = "";
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const alt = event.results[i][0]?.transcript ?? "";
+        if (event.results[i].isFinal) {
+          finalTranscript += (finalTranscript ? " " : "") + alt;
+        } else {
+          interim += alt;
+        }
+      }
+      const shown = (finalTranscript || interim).trim();
+      if (shown) setInputValue(shown);
+
+      if (finalTranscript.trim()) {
+        finishWith(finalTranscript);
+      }
     };
 
     rec.onend = () => {
       setIsListening(false);
+      if (!sent && finalTranscript.trim()) finishWith(finalTranscript);
     };
 
     rec.onerror = (e: any) => {
@@ -452,22 +482,29 @@ export function AiChatBot() {
 
   // Confirmar Factura
   const handleConfirmFactura = async (msgId: string, data: any) => {
+    const sinPrecio = (data.detalles || []).filter((d: any) => !d.precio_unitario || Number(d.precio_unitario) <= 0);
+    if (sinPrecio.length > 0) {
+      toast.error(`Falta el precio de: ${sinPrecio.map((d: any) => d.producto).join(", ")}. Complétalo antes de registrar.`);
+      return;
+    }
+
     setIsProcessing(true);
     try {
-      // 1. Guardar la factura
-      const factRes = await createFacturaFn({
+      const totalBs = (data.detalles || []).reduce(
+        (acc: number, d: any) => acc + Number(d.cantidad) * Number(d.precio_unitario),
+        0
+      );
+
+      await createFacturaFn({
         data: {
           cliente: data.cliente,
-          total_bs: data.total_bs,
+          total_bs: totalBs,
           estado: data.estado,
           detalles: data.detalles
         }
       } as any);
 
-      // 2. Decrementar el stock de los productos que sí existen en la base de datos
-      // y registrar sus movimientos correspondientes
       for (const item of data.detalles) {
-        // Registrar el movimiento de salida
         await createMovimientoFn({
           data: {
             producto: item.producto,
@@ -480,34 +517,48 @@ export function AiChatBot() {
         if (item.existe && item.originalId) {
           const nuevoStock = Math.max(0, item.currentStock - item.cantidad);
           const estado = nuevoStock === 0 ? "sin" : nuevoStock <= 20 ? "bajo" : "normal";
-          
+
           await updateProductFn({
             data: {
               id: item.originalId,
               stock: nuevoStock,
-              estado
+              estado,
+              // Si el usuario dictó un precio, actualizar catálogo
+              ...(Number(item.precio_unitario) > 0 ? { precio: Number(item.precio_unitario) } : {}),
             }
           } as any);
+        } else if (Number(item.precio_unitario) > 0) {
+          // Producto nuevo vendido: crearlo con stock 0 y el precio real
+          try {
+            await createProductFn({
+              data: {
+                sku: item.sku,
+                nombre: item.producto,
+                categoria: detectarCategoria(item.producto),
+                precio: Number(item.precio_unitario),
+                stock: 0,
+                estado: "sin",
+              }
+            } as any);
+          } catch {
+            // SKU duplicado u otro error — no bloquear la factura
+          }
         }
       }
 
-      // Obtener el número correlativo generado (estimado o volvemos a cargar facturas)
-      // Como createFacturaFn genera secuenciales, sólo indicamos éxito
-      toast.success("Factura generada y stock actualizado.");
+      toast.success("Factura generada y stock actualizado en Supabase.");
 
-      // Marcar mensaje como confirmado
       setMessages(prev => prev.map(m => {
         if (m.id === msgId && m.intent) {
           return {
             ...m,
-            text: `¡Factura generada correctamente! Factura para **${data.cliente}** por un total de **Bs ${data.total_bs.toFixed(2)}**.`,
-            intent: { ...m.intent, confirmed: true }
+            text: `¡Factura generada correctamente! Factura para **${data.cliente}** por un total de **Bs ${totalBs.toFixed(2)}**.`,
+            intent: { ...m.intent, confirmed: true, data: { ...data, total_bs: totalBs } }
           };
         }
         return m;
       }));
 
-      // Recargar base de datos local y router
       const updatedProds = await getProductsFn();
       setProductos(updatedProds || []);
       router.invalidate();
@@ -520,9 +571,20 @@ export function AiChatBot() {
 
   // Confirmar Movimiento
   const handleConfirmMovimiento = async (msgId: string, data: any) => {
+    const precio = Number(data.precio) || 0;
+    const matches = productos.filter(
+      p => p.sku === data.sku || p.nombre.toLowerCase() === data.producto.toLowerCase()
+    );
+    const existe = matches.length > 0;
+
+    // Producto nuevo: exigir precio real (no inventar 5/10/50)
+    if (!existe && precio <= 0) {
+      toast.error("Indica el precio unitario (Bs) del producto nuevo antes de registrar.");
+      return;
+    }
+
     setIsProcessing(true);
     try {
-      // 1. Crear el movimiento
       await createMovimientoFn({
         data: {
           producto: data.producto,
@@ -532,30 +594,24 @@ export function AiChatBot() {
         }
       } as any);
 
-      // 2. Intentar actualizar o crear el producto en inventario
-      const matches = productos.filter(
-        p => p.sku === data.sku || p.nombre.toLowerCase() === data.producto.toLowerCase()
-      );
-      const existe = matches.length > 0;
-
       if (existe) {
         const prod = matches[0];
-        const nuevoStock = data.tipo === "entrada" 
-          ? prod.stock + data.cantidad 
-          : Math.max(0, prod.stock - data.cantidad);
+        const nuevoStock = data.tipo === "entrada"
+          ? Number(prod.stock) + Number(data.cantidad)
+          : Math.max(0, Number(prod.stock) - Number(data.cantidad));
         const estado = nuevoStock === 0 ? "sin" : nuevoStock <= 20 ? "bajo" : "normal";
 
         await updateProductFn({
           data: {
             id: prod.id,
             stock: nuevoStock,
-            estado
+            estado,
+            // Actualizar precio del catálogo si el usuario lo indicó
+            ...(precio > 0 ? { precio } : {}),
           }
         } as any);
       } else {
-        // Crear producto nuevo
-        const precioUnitario = data.precio > 0 ? data.precio : 10.00;
-        const stockInicial = data.tipo === "entrada" ? data.cantidad : 0;
+        const stockInicial = data.tipo === "entrada" ? Number(data.cantidad) : 0;
         const estado = stockInicial === 0 ? "sin" : stockInicial <= 20 ? "bajo" : "normal";
 
         await createProductFn({
@@ -563,20 +619,24 @@ export function AiChatBot() {
             sku: data.sku,
             nombre: data.producto,
             categoria: data.categoria,
-            precio: precioUnitario,
+            precio,
             stock: stockInicial,
             estado
           }
         } as any);
       }
 
-      toast.success("Movimiento registrado y stock actualizado.");
+      toast.success(
+        precio > 0
+          ? `Movimiento registrado · ${data.producto} · Bs ${precio.toFixed(2)} c/u`
+          : "Movimiento registrado y stock actualizado."
+      );
 
       setMessages(prev => prev.map(m => {
         if (m.id === msgId && m.intent) {
           return {
             ...m,
-            text: `¡Movimiento registrado con éxito! Se cargó una **${data.tipo === "entrada" ? "Entrada" : "Salida"}** de **${data.cantidad} unidades** para el producto **${data.producto}**.`,
+            text: `¡Movimiento registrado! **${data.tipo === "entrada" ? "Entrada" : "Salida"}** de **${data.cantidad}** × **${data.producto}**${precio > 0 ? ` a **Bs ${precio.toFixed(2)}**` : ""}.`,
             intent: { ...m.intent, confirmed: true }
           };
         }
@@ -725,28 +785,36 @@ export function AiChatBot() {
                             </div>
 
                             <div className="space-y-1">
-                              <Label className="text-[10px] text-muted-foreground">Productos Detectados</Label>
-                              <div className="max-h-28 overflow-y-auto space-y-1.5 border rounded-lg p-2 bg-muted/10">
+                              <Label className="text-[10px] text-muted-foreground">Productos (cant. × precio Bs)</Label>
+                              {(intent.data.detalles || []).some((d: any) => !d.precio_unitario || Number(d.precio_unitario) <= 0) && (
+                                <p className="text-[10px] text-amber-700 bg-amber-50 border border-amber-200 rounded px-2 py-1">
+                                  ⚠ Falta precio en uno o más productos. Complétalo para registrar la venta real.
+                                </p>
+                              )}
+                              <div className="max-h-40 overflow-y-auto space-y-1.5 border rounded-lg p-2 bg-muted/10">
                                 {intent.data.detalles.map((det: any, idx: number) => (
-                                  <div key={idx} className="flex justify-between items-center py-1 border-b last:border-0">
-                                    <div className="min-w-0 flex-1 pr-2">
-                                      <span className="font-medium truncate block">{det.producto}</span>
+                                  <div key={idx} className="flex flex-col gap-1 py-1 border-b last:border-0">
+                                    <div className="min-w-0">
+                                      <span className="font-medium truncate block text-[11px]">{det.producto}</span>
                                       <span className="text-[9px] text-muted-foreground block">
-                                        Stock: {det.currentStock} {det.existe ? "" : " (No registrado)"}
+                                        Stock: {det.currentStock}{det.existe ? "" : " · nuevo"}
+                                        {det.precioFuente === "voz" ? " · precio por voz" : det.precioFuente === "catalogo" ? " · precio catálogo" : " · precio pendiente"}
                                       </span>
                                     </div>
-                                    <div className="flex items-center gap-1.5 shrink-0">
-                                      <Input 
+                                    <div className="flex items-center gap-1.5">
+                                      <Input
                                         type="number"
-                                        className="h-6 w-10 text-center p-0"
+                                        min={1}
+                                        title="Cantidad"
+                                        className="h-6 w-12 text-center p-0 text-[11px]"
                                         value={det.cantidad}
                                         onChange={(e) => {
                                           const qty = parseInt(e.target.value) || 1;
                                           const updatedDetalles = [...intent.data.detalles];
-                                          updatedDetalles[idx] = { 
-                                            ...det, 
+                                          updatedDetalles[idx] = {
+                                            ...det,
                                             cantidad: qty,
-                                            subtotal: qty * det.precio_unitario
+                                            subtotal: qty * Number(det.precio_unitario || 0)
                                           };
                                           const newTotal = updatedDetalles.reduce((acc, curr) => acc + curr.subtotal, 0);
                                           setMessages(prev => prev.map(m => m.id === msg.id && m.intent ? {
@@ -755,8 +823,36 @@ export function AiChatBot() {
                                           } : m));
                                         }}
                                       />
-                                      <span className="font-mono text-[10px] min-w-[45px] text-right">
-                                        Bs {det.subtotal.toFixed(2)}
+                                      <span className="text-[10px] text-muted-foreground">×</span>
+                                      <Input
+                                        type="number"
+                                        min={0}
+                                        step="0.01"
+                                        title="Precio unitario Bs"
+                                        placeholder="Precio"
+                                        className={cn(
+                                          "h-6 w-16 text-center p-0 text-[11px]",
+                                          (!det.precio_unitario || Number(det.precio_unitario) <= 0) && "border-amber-400 ring-1 ring-amber-300"
+                                        )}
+                                        value={det.precio_unitario === 0 ? "" : det.precio_unitario}
+                                        onChange={(e) => {
+                                          const prec = parseFloat(e.target.value) || 0;
+                                          const updatedDetalles = [...intent.data.detalles];
+                                          updatedDetalles[idx] = {
+                                            ...det,
+                                            precio_unitario: prec,
+                                            subtotal: Number(det.cantidad) * prec,
+                                            precioFuente: prec > 0 ? "voz" : "pendiente",
+                                          };
+                                          const newTotal = updatedDetalles.reduce((acc, curr) => acc + curr.subtotal, 0);
+                                          setMessages(prev => prev.map(m => m.id === msg.id && m.intent ? {
+                                            ...m,
+                                            intent: { ...m.intent, data: { ...m.intent.data, detalles: updatedDetalles, total_bs: newTotal } }
+                                          } : m));
+                                        }}
+                                      />
+                                      <span className="font-mono text-[10px] min-w-[48px] text-right ml-auto">
+                                        Bs {Number(det.subtotal || 0).toFixed(2)}
                                       </span>
                                     </div>
                                   </div>
@@ -844,8 +940,9 @@ export function AiChatBot() {
                             <div className="grid grid-cols-2 gap-2">
                               <div>
                                 <Label className="text-[10px] text-muted-foreground">Cantidad</Label>
-                                <Input 
+                                <Input
                                   type="number"
+                                  min={1}
                                   className="h-7 text-xs"
                                   value={intent.data.cantidad}
                                   onChange={(e) => {
@@ -858,22 +955,45 @@ export function AiChatBot() {
                                 />
                               </div>
                               <div>
-                                <Label className="text-[10px] text-muted-foreground">Precio Ref (Bs)</Label>
-                                <Input 
+                                <Label className="text-[10px] text-muted-foreground">Precio unitario (Bs)</Label>
+                                <Input
                                   type="number"
                                   step="0.01"
-                                  className="h-7 text-xs"
-                                  value={intent.data.precio}
+                                  min={0}
+                                  placeholder="Ej: 50"
+                                  className={cn(
+                                    "h-7 text-xs",
+                                    (!intent.data.precio || Number(intent.data.precio) <= 0) && !intent.data.existe && "border-amber-400 ring-1 ring-amber-300"
+                                  )}
+                                  value={intent.data.precio === 0 || intent.data.precio === "" ? "" : intent.data.precio}
                                   onChange={(e) => {
-                                    const val = parseFloat(e.target.value) || 0;
+                                    const val = e.target.value === "" ? 0 : parseFloat(e.target.value);
                                     setMessages(prev => prev.map(m => m.id === msg.id && m.intent ? {
                                       ...m,
-                                      intent: { ...m.intent, data: { ...m.intent.data, precio: val } }
+                                      intent: {
+                                        ...m.intent,
+                                        data: {
+                                          ...m.intent.data,
+                                          precio: Number.isFinite(val) ? val : 0,
+                                          precioFuente: (Number.isFinite(val) && val > 0) ? "voz" : "pendiente",
+                                        }
+                                      }
                                     } : m));
                                   }}
                                 />
                               </div>
                             </div>
+                            {intent.data.precio > 0 && intent.data.cantidad > 0 && (
+                              <div className="rounded-md border border-emerald-200 bg-emerald-50 px-2 py-1.5 text-[11px] text-emerald-800 font-medium">
+                                Total: Bs {(Number(intent.data.cantidad) * Number(intent.data.precio)).toFixed(2)}
+                                {intent.data.precioFuente === "voz" ? " · detectado por voz" : intent.data.precioFuente === "catalogo" ? " · del catálogo" : ""}
+                              </div>
+                            )}
+                            {(!intent.data.precio || Number(intent.data.precio) <= 0) && !intent.data.existe && (
+                              <p className="text-[10px] text-amber-700 bg-amber-50 border border-amber-200 rounded px-2 py-1">
+                                Producto nuevo: escribe el precio real. No se inventa un valor por defecto.
+                              </p>
+                            )}
 
                             <div className="grid grid-cols-2 gap-2 pt-1">
                               <Button variant="outline" size="sm" className="h-8 text-[11px]" onClick={() => {

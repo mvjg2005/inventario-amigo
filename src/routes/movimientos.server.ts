@@ -1,11 +1,8 @@
 import { createServerFn } from "@tanstack/react-start";
 import { getAuthSupabase, getCurrentUserId } from "@/lib/supabase";
-import { DEMO_USER_ID, demoMovimientos } from "@/lib/demoMode";
 
 export const getMovimientosFn = createServerFn({ method: "GET" }).handler(async () => {
   const userId = await getCurrentUserId();
-  if (userId === DEMO_USER_ID) return [...demoMovimientos];
-
   const client = getAuthSupabase();
 
   const { data, error } = await client
@@ -20,9 +17,12 @@ export const getMovimientosFn = createServerFn({ method: "GET" }).handler(async 
 
 export const createMovimientoFn = createServerFn({ method: "POST" }).handler(async (ctx: any) => {
   const userId = await getCurrentUserId();
-  if (userId === DEMO_USER_ID) return { success: true };
-
   const client = getAuthSupabase();
+
+  const cantidad = Number(ctx.data.cantidad);
+  if (!Number.isFinite(cantidad) || cantidad <= 0) {
+    throw new Error("La cantidad debe ser mayor a 0");
+  }
 
   const { error } = await client.from("movimientos").insert([
     {
@@ -30,7 +30,7 @@ export const createMovimientoFn = createServerFn({ method: "POST" }).handler(asy
       sku: ctx.data.sku,
       producto: ctx.data.producto,
       tipo: ctx.data.tipo,
-      cantidad: ctx.data.cantidad,
+      cantidad,
     },
   ]);
 

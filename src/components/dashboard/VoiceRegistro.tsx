@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { generarSku, parseMovimientoVoice } from "@/lib/voiceParse";
 
 const CATEGORIAS: Record<string, string[]> = {
   "Panadería": ["pan", "marraqueta", "galleta", "torta", "bizcocho", "empanada", "croissant"],
@@ -31,12 +32,6 @@ function detectarCategoria(texto: string): string {
   return "General";
 }
 
-function generarSku(nombre: string): string {
-  const clean = nombre.toUpperCase().replace(/[^A-Z0-9 ]/g, "").split(" ").filter(Boolean);
-  const prefijo = clean.map(p => p.slice(0, 3)).join("").slice(0, 6);
-  return `${prefijo || "PRD"}-${Math.floor(Math.random() * 900) + 100}`;
-}
-
 interface ParsedVoice {
   producto: string;
   cantidad: number;
@@ -45,47 +40,28 @@ interface ParsedVoice {
   categoria: string;
   sku: string;
   confianza: number;
+  precioDetectado: boolean;
 }
 
 function parsearTexto(texto: string): ParsedVoice | null {
-  const t = texto.toLowerCase().trim();
-  if (!t) return null;
+  const mov = parseMovimientoVoice(texto);
+  if (!mov) return null;
 
-  const esEntrada = /compr[eé]|entr[oó]|recibi|ingres[oó]|lleg[oó]/.test(t);
-  const tipo: "entrada" | "salida" = esEntrada ? "entrada" : "salida";
-
-  // Extraer cantidad — primer número del texto
-  const numeros = t.match(/\d+(?:[.,]\d+)?/g) ?? [];
-  const cantidad = numeros.length > 0 ? parseInt(numeros[0] ?? "") : 1;
-  const precio = numeros.length > 1 ? parseFloat((numeros[numeros.length - 1] ?? "").replace(",", ".")) : 0;
-
-  // Extraer producto: quitar verbos al inicio y precio/bolivianos al final
-  let producto = t
-    .replace(/^(vend[íi]|vend[ée]|compr[eé]|entr[oó]|sali[oó]|recib[íi]|despacha[oó])\s+/i, "")
-    .replace(/\d+(?:[.,]\d+)?\s*(bolivianos?|bs\.?|pesos?|dólares?|usd)?\s*$/i, "")
-    .replace(/\s+(a|por|precio|cada)\s+.*$/i, "")
-    .replace(/^\d+(?:[.,]\d+)?\s*(unidades?|kilos?|kg|litros?|cajas?|bolsas?|paquetes?|docenas?)?\s*/i, "")
-    .replace(/\s+/g, " ")
-    .trim();
-
-  // Capitalizar
-  producto = producto.split(" ").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
-
-  if (!producto || producto.length < 2) return null;
-
-  let confianza = 55;
-  if (cantidad > 1) confianza += 15;
-  if (precio > 0) confianza += 20;
-  if (esEntrada || /vend|sal/i.test(t)) confianza += 10;
+  let confianza = 40;
+  if (mov.cantidad > 1) confianza += 15;
+  if (mov.precioDetectado && mov.precio > 0) confianza += 30;
+  if (mov.producto.length >= 3) confianza += 10;
+  if (mov.tipo) confianza += 5;
 
   return {
-    producto,
-    cantidad,
-    precio,
-    tipo,
-    categoria: detectarCategoria(producto),
-    sku: generarSku(producto),
+    producto: mov.producto,
+    cantidad: mov.cantidad,
+    precio: mov.precio,
+    tipo: mov.tipo,
+    categoria: detectarCategoria(mov.producto),
+    sku: generarSku(mov.producto),
     confianza: Math.min(100, confianza),
+    precioDetectado: mov.precioDetectado,
   };
 }
 
@@ -149,7 +125,7 @@ export function VoiceRegistro({ onConfirm }: VoiceRegistroProps) {
     }
 
     const recognition = new SpeechRec();
-    recognition.lang = "es-ES";
+    recognition.lang = "es-BO";
     recognition.interimResults = true;
     recognition.maxAlternatives = 3;
     recognition.continuous = false;
@@ -256,14 +232,19 @@ export function VoiceRegistro({ onConfirm }: VoiceRegistroProps) {
   const handleConfirm = async (e: React.FormEvent) => {
     e.preventDefault();
     const cantidad = parseInt(form.cantidad);
+    const precio = parseFloat(form.precio);
     if (isNaN(cantidad) || cantidad <= 0) { toast.error("La cantidad debe ser mayor a 0"); return; }
+    if (isNaN(precio) || precio <= 0) {
+      toast.error("Indica el precio unitario real (Bs). No se asigna un valor por defecto.");
+      return;
+    }
     setEstado("guardando");
     try {
       await onConfirm({
         producto: form.producto, sku: form.sku, tipo: form.tipo,
-        cantidad, precio: parseFloat(form.precio) || 0, categoria: form.categoria,
+        cantidad, precio, categoria: form.categoria,
       });
-      toast.success(`✅ ${form.tipo === "salida" ? "Venta" : "Entrada"} de ${cantidad} ${form.producto} registrada`);
+      toast.success(`✅ ${form.tipo === "salida" ? "Venta" : "Entrada"} de ${cantidad} ${form.producto} a Bs ${precio.toFixed(2)}`);
       setEstado("idle");
       setIsOpen(false);
       reiniciar();
@@ -429,12 +410,27 @@ export function VoiceRegistro({ onConfirm }: VoiceRegistroProps) {
                 </div>
                 <div className="space-y-1">
                   <Label>Precio unitario (Bs)</Label>
-                  <Input type="number" step="0.01" min="0" value={form.precio} onChange={e => setForm({ ...form, precio: e.target.value })} placeholder="0.00" />
+                  <Input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    value={form.precio}
+                    onChange={e => setForm({ ...form, precio: e.target.value })}
+                    placeholder="Ej: 50"
+                    required
+                    className={cn(!form.precio || parseFloat(form.precio) <= 0 ? "border-amber-400" : "")}
+                  />
                 </div>
               </div>
+              {parsed && !parsed.precioDetectado && (
+                <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-md px-2 py-1.5">
+                  No se detectó precio en la frase. Escríbelo manualmente (ej. 50). No se usa un valor inventado.
+                </p>
+              )}
               {form.cantidad && form.precio && parseFloat(form.precio) > 0 && (
                 <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-800 font-medium">
                   💰 Total: Bs {(parseInt(form.cantidad) * parseFloat(form.precio)).toFixed(2)}
+                  {parsed?.precioDetectado ? " · precio por voz" : ""}
                 </div>
               )}
               <div className="flex gap-2 pt-1">

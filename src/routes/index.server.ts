@@ -1,6 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
 import { getAuthSupabase, getCurrentUserId } from "@/lib/supabase";
-import { DEMO_USER_ID, demoMovimientos, demoProducts } from "@/lib/demoMode";
 
 export interface DashboardKpis {
   totalProductos: number;
@@ -14,33 +13,6 @@ export interface DashboardKpis {
 
 export const getDashboardKpisFn = createServerFn({ method: "GET" }).handler(async (): Promise<DashboardKpis> => {
   const userId = await getCurrentUserId();
-  if (userId === DEMO_USER_ID) {
-    const totalProductos = demoProducts.length;
-    const valorInventario = demoProducts.reduce((acc, p) => acc + (Number(p.precio) * Number(p.stock)), 0);
-    const stockTotal = demoProducts.reduce((acc, p) => acc + Number(p.stock), 0);
-    const salidaMes = demoMovimientos.filter(m => m.tipo === "salida").reduce((acc, m) => acc + m.cantidad, 0);
-
-    return {
-      totalProductos,
-      valorInventario,
-      rotacionPromedio: stockTotal > 0 ? Math.round((salidaMes / stockTotal) * 10) / 10 : 0,
-      porcentajeError: Math.round((demoProducts.filter(p => p.estado === "sin").length / totalProductos) * 1000) / 10,
-      topProductos: demoProducts.slice(0, 5).map(p => ({ product: p.nombre, ventas: Number(p.stock) })),
-      alertas: demoProducts
-        .filter(p => p.estado === "bajo" || p.estado === "sin")
-        .map(p => ({ product: p.nombre, sku: p.sku, stock: Number(p.stock), min: 20, severity: p.estado === "sin" ? "out" as const : "low" as const })),
-      movimientosRecientes: demoMovimientos.map(m => ({
-        id: `MV-${m.id}`,
-        product: m.producto,
-        sku: m.sku,
-        type: m.tipo as "entrada" | "salida",
-        qty: m.cantidad,
-        date: new Date(m.created_at).toLocaleString("es-BO", { dateStyle: "short", timeStyle: "short" }),
-        stock: "normal" as const,
-      })),
-    };
-  }
-
   const client = getAuthSupabase();
 
   // 1. Obtener todos los productos del usuario

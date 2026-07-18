@@ -1,11 +1,8 @@
 import { createServerFn } from "@tanstack/react-start";
 import { getAuthSupabase, getCurrentUserId } from "@/lib/supabase";
-import { DEMO_USER_ID, demoFacturas } from "@/lib/demoMode";
 
 export const getFacturasFn = createServerFn({ method: "GET" }).handler(async () => {
   const userId = await getCurrentUserId();
-  if (userId === DEMO_USER_ID) return [...demoFacturas];
-
   const client = getAuthSupabase();
 
   const { data, error } = await client
@@ -20,11 +17,13 @@ export const getFacturasFn = createServerFn({ method: "GET" }).handler(async () 
 
 export const createFacturaFn = createServerFn({ method: "POST" }).handler(async (ctx: any) => {
   const userId = await getCurrentUserId();
-  if (userId === DEMO_USER_ID) return { success: true };
-
   const client = getAuthSupabase();
 
-  // Generar número de factura secuencial
+  const total = Number(ctx.data.total_bs);
+  if (!Number.isFinite(total) || total < 0) {
+    throw new Error("El total de la factura es inválido.");
+  }
+
   const { count } = await client
     .from("facturas")
     .select("*", { count: "exact", head: true })
@@ -37,7 +36,7 @@ export const createFacturaFn = createServerFn({ method: "POST" }).handler(async 
       user_id: userId,
       numero,
       cliente: ctx.data.cliente,
-      total_bs: ctx.data.total_bs,
+      total_bs: total,
       estado: ctx.data.estado,
       detalles: ctx.data.detalles || null,
       fecha: new Date().toISOString().split("T")[0],
@@ -45,5 +44,5 @@ export const createFacturaFn = createServerFn({ method: "POST" }).handler(async 
   ]);
 
   if (error) throw new Error(error.message);
-  return { success: true };
+  return { success: true, numero };
 });

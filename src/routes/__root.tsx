@@ -73,7 +73,9 @@ import { redirect } from "@tanstack/react-router";
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   beforeLoad: async ({ location }) => {
-    const isPublicRoute = ["/login", "/registro", "/recuperar"].includes(location.pathname);
+    const isPublicRoute = ["/login", "/registro", "/recuperar", "/auth/callback"].includes(
+      location.pathname,
+    );
     const user = await getAuthSessionFn();
     
     if (!user && !isPublicRoute) {

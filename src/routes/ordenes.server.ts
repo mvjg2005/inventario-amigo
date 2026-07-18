@@ -1,11 +1,8 @@
 import { createServerFn } from "@tanstack/react-start";
 import { getAuthSupabase, getCurrentUserId } from "@/lib/supabase";
-import { DEMO_USER_ID, demoOrdenes } from "@/lib/demoMode";
 
 export const getOrdenesFn = createServerFn({ method: "GET" }).handler(async () => {
   const userId = await getCurrentUserId();
-  if (userId === DEMO_USER_ID) return [...demoOrdenes];
-
   const client = getAuthSupabase();
 
   const { data, error } = await client
@@ -20,11 +17,13 @@ export const getOrdenesFn = createServerFn({ method: "GET" }).handler(async () =
 
 export const createOrdenFn = createServerFn({ method: "POST" }).handler(async (ctx: any) => {
   const userId = await getCurrentUserId();
-  if (userId === DEMO_USER_ID) return { success: true };
-
   const client = getAuthSupabase();
 
-  // Generar número de orden secuencial en base a la cantidad actual
+  const total = Number(ctx.data.total);
+  if (!Number.isFinite(total) || total < 0) {
+    throw new Error("El total de la orden es inválido.");
+  }
+
   const { count } = await client
     .from("ordenes")
     .select("*", { count: "exact", head: true })
@@ -38,12 +37,12 @@ export const createOrdenFn = createServerFn({ method: "POST" }).handler(async (c
       numero,
       proveedor: ctx.data.proveedor,
       items: ctx.data.items,
-      total: ctx.data.total,
+      total,
       estado: ctx.data.estado,
       detalles: ctx.data.detalles || null,
     },
   ]);
 
   if (error) throw new Error(error.message);
-  return { success: true };
+  return { success: true, numero };
 });

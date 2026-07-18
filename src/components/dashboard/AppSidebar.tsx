@@ -113,7 +113,11 @@ export function AppSidebar() {
               </div>
               <div className="flex flex-col truncate pr-2">
                 <span className="text-sm font-medium truncate">
-                  {user.user_metadata?.nombre || "Mi Cuenta"}
+                  {user.user_metadata?.nombre ||
+                    user.user_metadata?.full_name ||
+                    user.user_metadata?.name ||
+                    user.email?.split("@")[0] ||
+                    "Mi Cuenta"}
                 </span>
                 <span className="text-xs text-muted-foreground truncate">
                   {user.email}
