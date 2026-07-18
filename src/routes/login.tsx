@@ -11,12 +11,21 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Package2, Eye, EyeOff, Loader2, AlertCircle } from "lucide-react";
+import { Package2, Eye, EyeOff, Loader2, AlertCircle, CheckCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { OceanBackground } from "@/components/auth/OceanBackground";
 import { GoogleAuthButton } from "@/components/auth/GoogleAuthButton";
 
+type LoginSearch = {
+  email?: string;
+  registered?: string;
+};
+
 export const Route = createFileRoute("/login")({
+  validateSearch: (search: Record<string, unknown>): LoginSearch => ({
+    email: typeof search.email === "string" ? search.email : undefined,
+    registered: typeof search.registered === "string" ? search.registered : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Iniciar sesión — StockPyme" },
@@ -52,12 +61,14 @@ function friendlyLoginError(message: string): string {
 
 function LoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState("");
+  const search = Route.useSearch();
+  const [email, setEmail] = useState(search.email ?? "");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [oauthBusy, setOauthBusy] = useState(false);
+  const justRegistered = search.registered === "1";
 
   const busy = loading || oauthBusy;
 
@@ -68,7 +79,7 @@ function LoginPage() {
     try {
       await loginFn({ data: { email: email.trim(), password } } as any);
       await router.invalidate();
-      await router.navigate({ to: "/" });
+      await router.navigate({ to: "/productos" });
     } catch (err: any) {
       setError(friendlyLoginError(err?.message ?? ""));
     } finally {
@@ -101,6 +112,24 @@ function LoginPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
+            {justRegistered && (
+              <Alert className="mb-4 border-emerald-200 bg-emerald-50">
+                <CheckCircle className="h-4 w-4 text-emerald-600" />
+                <AlertDescription className="text-emerald-900">
+                  Cuenta creada correctamente. Inicia sesión con el correo
+                  {email ? (
+                    <>
+                      {" "}
+                      <strong className="break-all">{email}</strong>
+                    </>
+                  ) : (
+                    " que registraste"
+                  )}{" "}
+                  y tu contraseña.
+                </AlertDescription>
+              </Alert>
+            )}
+
             <div className="space-y-4">
               <GoogleAuthButton
                 disabled={busy}
