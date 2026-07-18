@@ -35,6 +35,7 @@ import {
   parseMovimientoVoice,
   wordsToDigits,
 } from "@/lib/voiceParse";
+import { loadSystemPrefs } from "@/lib/systemPrefs";
 
 interface Message {
   id: string;
@@ -352,44 +353,85 @@ export function AiChatBot() {
     // Procesamiento
     setTimeout(() => {
       const intent = parseComando(text, productos);
-      
+      const prefs = loadSystemPrefs();
+      const replyId = "reply-" + Date.now();
+
       let assistantMsg: Message;
-      
+      /** Si la validación está OFF y hay datos suficientes, registrar sin pedir clic. */
+      let autoRegistrarMovimiento: { msgId: string; data: any } | null = null;
+
       if (intent.type === "factura") {
         assistantMsg = {
-          id: "reply-" + Date.now(),
+          id: replyId,
           sender: "assistant",
           text: `He estructurado la siguiente factura basándome en el inventario actual. ¿Deseas guardarla y generar el comprobante?`,
           timestamp: new Date(),
-          intent: intent as any
+          intent: intent as any,
         };
       } else if (intent.type === "movimiento") {
-        assistantMsg = {
-          id: "reply-" + Date.now(),
-          sender: "assistant",
-          text: `He estructurado el siguiente movimiento de inventario. ¿Confirmas el registro?`,
-          timestamp: new Date(),
-          intent: intent as any
-        };
+        const data = intent.data ?? {};
+        const precio = Number(data.precio) || 0;
+        const existe = Boolean(
+          data.existe ||
+            productos.some(
+              (p) =>
+                p.sku === data.sku ||
+                p.nombre?.toLowerCase() === String(data.producto || "").toLowerCase(),
+            ),
+        );
+        // Sin validación: auto-registrar si el producto ya existe o ya hay precio
+        const puedeAuto =
+          !prefs.validacionMovimientos && (existe || precio > 0) && Number(data.cantidad) > 0;
+
+        if (puedeAuto) {
+          assistantMsg = {
+            id: replyId,
+            sender: "assistant",
+            text: `Registrando movimiento sin confirmación (validación desactivada)…`,
+            timestamp: new Date(),
+            intent: { ...(intent as any), data: { ...data, existe } },
+          };
+          autoRegistrarMovimiento = { msgId: replyId, data: { ...data, existe } };
+        } else {
+          assistantMsg = {
+            id: replyId,
+            sender: "assistant",
+            text: prefs.validacionMovimientos
+              ? `He estructurado el siguiente movimiento de inventario. Revisa los datos y confirma el registro.`
+              : `Faltan datos (p. ej. precio del producto nuevo). Completa y registra el movimiento.`,
+            timestamp: new Date(),
+            intent: intent as any,
+          };
+        }
       } else if (intent.type === "orden") {
         assistantMsg = {
-          id: "reply-" + Date.now(),
+          id: replyId,
           sender: "assistant",
           text: `He estructurado la siguiente orden de compra. ¿Confirmas el registro?`,
           timestamp: new Date(),
-          intent: intent as any
+          intent: intent as any,
         };
       } else {
         assistantMsg = {
-          id: "reply-" + Date.now(),
+          id: replyId,
           sender: "assistant",
           text: "No estoy seguro de haber entendido. ¿Podrías intentar expresarlo de otra forma? Recuerda que puedo:\n- Generar facturas (ej. *'vendi 3 panes'*)\n- Registrar movimientos (ej. *'compré 10 leches a 5 bs'*)\n- Crear órdenes de compra (ej. *'orden de compra a PIL'*).",
-          timestamp: new Date()
+          timestamp: new Date(),
         };
       }
 
-      setMessages(prev => [...prev, assistantMsg]);
+      setMessages((prev) => [...prev, assistantMsg]);
       setIsProcessing(false);
+
+      if (autoRegistrarMovimiento) {
+        // Pequeño delay para que el mensaje quede en el historial antes de confirmar
+        setTimeout(() => {
+          void handleConfirmMovimiento(
+            autoRegistrarMovimiento!.msgId,
+            autoRegistrarMovimiento!.data,
+          );
+        }, 50);
+      }
     }, 600);
   };
 

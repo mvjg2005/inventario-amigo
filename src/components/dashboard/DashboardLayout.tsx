@@ -12,6 +12,7 @@ import { UserMenu } from "@/components/dashboard/UserMenu";
 import { getDashboardKpisFn } from "@/routes/index.server";
 import { useNavigate, useRouteContext } from "@tanstack/react-router";
 import { cn } from "@/lib/utils";
+import { loadSystemPrefs } from "@/lib/systemPrefs";
 
 interface DashboardLayoutProps {
   title: string;
@@ -36,10 +37,29 @@ export function DashboardLayout({ title, description, children }: DashboardLayou
   const [alertas, setAlertas] = useState<Alerta[]>([]);
   const [leidas, setLeidas] = useState<Set<string>>(new Set());
   const [loadingAlertas, setLoadingAlertas] = useState(true);
+  const [mostrarAlertas, setMostrarAlertas] = useState(true);
+
+  // Preferencia: alertas de bajo inventario
+  useEffect(() => {
+    const syncPrefs = () => setMostrarAlertas(loadSystemPrefs().alertasBajoInventario);
+    syncPrefs();
+    window.addEventListener("stockpyme-prefs-changed", syncPrefs);
+    window.addEventListener("storage", syncPrefs);
+    return () => {
+      window.removeEventListener("stockpyme-prefs-changed", syncPrefs);
+      window.removeEventListener("storage", syncPrefs);
+    };
+  }, []);
 
   // ─── Cargar alertas reales desde Supabase ─────────────────────────────────
   useEffect(() => {
+    if (!mostrarAlertas) {
+      setAlertas([]);
+      setLoadingAlertas(false);
+      return;
+    }
     const cargar = async () => {
+      setLoadingAlertas(true);
       try {
         const kpis = await getDashboardKpisFn();
         setAlertas(kpis.alertas);
@@ -50,9 +70,9 @@ export function DashboardLayout({ title, description, children }: DashboardLayou
       }
     };
     cargar();
-  }, []);
+  }, [mostrarAlertas]);
 
-  const sinLeer = alertas.filter(a => !leidas.has(a.sku)).length;
+  const sinLeer = mostrarAlertas ? alertas.filter(a => !leidas.has(a.sku)).length : 0;
 
   const marcarTodasLeidas = () => {
     setLeidas(new Set(alertas.map(a => a.sku)));

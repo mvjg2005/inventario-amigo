@@ -18,6 +18,7 @@ import {
   loadStoredProfile,
   setAvatarChoice,
 } from "@/lib/userProfile";
+import { loadSystemPrefs, saveSystemPrefs, type SystemPrefs } from "@/lib/systemPrefs";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/configuracion")({
@@ -48,22 +49,12 @@ function ConfiguracionPage() {
     zonaHoraria: string;
   };
 
-  type PrefsConfig = {
-    alertasBajoInventario: boolean;
-    validacionMovimientos: boolean;
-  };
-
   const defaultEmpresa: EmpresaConfig = {
     razon: "StockPyme S.R.L.",
     nit: "1023456789",
     direccion: "Av. Arce 2345, La Paz",
     moneda: "Bs",
     zonaHoraria: "America/La_Paz",
-  };
-
-  const defaultPrefs: PrefsConfig = {
-    alertasBajoInventario: true,
-    validacionMovimientos: false,
   };
 
   // ─── Información de empresa ──────────────────────────────────────
@@ -82,27 +73,20 @@ function ConfiguracionPage() {
   });
 
   // ─── Preferencias ────────────────────────────────────────────────
-  const [prefs, setPrefs] = useState<PrefsConfig>(() => {
-    if (typeof window !== "undefined") {
-      const saved = localStorage.getItem("stockpyme_prefs");
-      if (saved) {
-        try {
-          return { ...defaultPrefs, ...JSON.parse(saved) };
-        } catch (e) {
-          console.error(e);
-        }
-      }
-    }
-    return defaultPrefs;
-  });
+  const [prefs, setPrefs] = useState<SystemPrefs>(() => loadSystemPrefs());
 
-  const togglePref = (key: keyof PrefsConfig) =>
-    setPrefs((prev) => ({ ...prev, [key]: !prev[key] }));
+  const togglePref = (key: keyof SystemPrefs) => {
+    setPrefs((prev) => {
+      const next = { ...prev, [key]: !prev[key] };
+      // Guardar al instante para que el asistente IA y el panel reaccionen de inmediato
+      saveSystemPrefs(next);
+      return next;
+    });
+  };
 
   const handleGuardar = () => {
-    // Persiste en localStorage como ejemplo funcional
     localStorage.setItem("stockpyme_empresa", JSON.stringify(empresa));
-    localStorage.setItem("stockpyme_prefs", JSON.stringify(prefs));
+    saveSystemPrefs(prefs);
     toast.success("Configuración guardada correctamente");
   };
 
@@ -330,10 +314,13 @@ function ConfiguracionPage() {
 
             {/* Validación de movimientos */}
             <div className="flex items-center justify-between py-3.5">
-              <div>
+              <div className="pr-4">
                 <p className="text-sm font-medium">Validación de movimientos</p>
                 <p className="text-xs text-muted-foreground">
-                  El asistente IA pedirá confirmación antes de registrar entradas o salidas de almacén
+                  Si está activa, el asistente IA (Stocky) muestra la ficha del movimiento y espera
+                  tu clic en <strong>Registrar</strong> antes de guardar entradas o salidas.
+                  Si está desactivada, registra al instante cuando el producto ya existe o ya
+                  tiene precio.
                 </p>
               </div>
               <Switch
