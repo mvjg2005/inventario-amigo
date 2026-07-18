@@ -1,0 +1,404 @@
+---
+pid: 15504
+cwd: "C:\Users\MIVA\Desktop\inventario-amigo"
+command: "npm run build"
+started_at: 2026-07-08T13:23:48.079Z
+running_for_ms: 389996   
+---
+
+> build
+> vite build
+
+[nitro:vercel] ℹ Using nodejs24.x runtime.
+[nitro:vercel] ℹ Using web entry format.
+Warning: Route file "C:/Users/MIVA/Desktop/inventario-amigo/src/routes/__root.server.ts" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\MIVA\Desktop\inventario-amigo\src\routes\-__root.server.ts" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/MIVA/Desktop/inventario-amigo/src/routes/facturas.server.ts" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\MIVA\Desktop\inventario-amigo\src\routes\-facturas.server.ts" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/MIVA/Desktop/inventario-amigo/src/routes/index.server.ts" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\MIVA\Desktop\inventario-amigo\src\routes\-index.server.ts" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/MIVA/Desktop/inventario-amigo/src/routes/login.server.ts" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\MIVA\Desktop\inventario-amigo\src\routes\-login.server.ts" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/MIVA/Desktop/inventario-amigo/src/routes/movimientos.server.ts" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\MIVA\Desktop\inventario-amigo\src\routes\-movimientos.server.ts" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/MIVA/Desktop/inventario-amigo/src/routes/ordenes.server.ts" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\MIVA\Desktop\inventario-amigo\src\routes\-ordenes.server.ts" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/MIVA/Desktop/inventario-amigo/src/routes/productos.server.ts" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\MIVA\Desktop\inventario-amigo\src\routes\-productos.server.ts" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/MIVA/Desktop/inventario-amigo/src/routes/registro.server.ts" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\MIVA\Desktop\inventario-amigo\src\routes\-registro.server.ts" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/MIVA/Desktop/inventario-amigo/src/routes/usuarios.server.ts" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\MIVA\Desktop\inventario-amigo\src\routes\-usuarios.server.ts" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+vite v7.3.3 building client environment for production...
+transforming...
+✓ 2687 modules transformed.
+rendering chunks...
+computing gzip size...
+.vercel/output/static/assets/styles-Bu3A_nks.css               90.89 kB │ gzip:  15.17 kB
+.vercel/output/static/assets/circle-check-big-Blw0vAN2.js       0.19 kB │ gzip:   0.18 kB
+.vercel/output/static/assets/download-Nu33dUZv.js               0.23 kB │ gzip:   0.19 kB
+.vercel/output/static/assets/circle-alert-Ciir7ztA.js           0.25 kB │ gzip:   0.19 kB
+.vercel/output/static/assets/trash-2-CQyh9hZ2.js                0.33 kB │ gzip:   0.21 kB
+.vercel/output/static/assets/package-2-yzaohKVn.js              0.34 kB │ gzip:   0.25 kB
+.vercel/output/static/assets/eye-ojNNqOyY.js                    0.64 kB │ gzip:   0.34 kB
+.vercel/output/static/assets/KpiCard-CJi7kV4j.js                0.89 kB │ gzip:   0.45 kB
+.vercel/output/static/assets/alert-CoeQ4yBT.js                  0.95 kB │ gzip:   0.49 kB
+.vercel/output/static/assets/alertas-y1AlV7w4.js                1.59 kB │ gzip:   0.85 kB
+.vercel/output/static/assets/dialog-DL3aT4kj.js                 2.02 kB │ gzip:   0.88 kB
+.vercel/output/static/assets/MovementsTable-BDVlH38q.js         2.16 kB │ gzip:   0.87 kB
+.vercel/output/static/assets/recuperar-BxwyBghL.js              2.19 kB │ gzip:   0.99 kB
+.vercel/output/static/assets/table-ByTu974y.js                  2.26 kB │ gzip:   0.80 kB
+.vercel/output/static/assets/index-B6H4-fWB.js                  2.44 kB │ gzip:   1.18 kB
+.vercel/output/static/assets/login-BcILHNzF.js                  3.29 kB │ gzip:   1.38 kB
+.vercel/output/static/assets/reportes-CqxkUSEo.js               3.50 kB │ gzip:   1.84 kB
+.vercel/output/static/assets/movimientos-CY-pRUHo.js            3.80 kB │ gzip:   1.63 kB
+.vercel/output/static/assets/admin.limpiar-datos-BDuFUIL2.js    3.83 kB │ gzip:   1.58 kB
+.vercel/output/static/assets/registro-CR6ZcIzf.js               4.02 kB │ gzip:   1.74 kB
+.vercel/output/static/assets/usuarios-UYPedKmX.js               4.44 kB │ gzip:   1.79 kB
+.vercel/output/static/assets/AlertsPanel-CvM8Tp7K.js            4.90 kB │ gzip:   2.13 kB
+.vercel/output/static/assets/soporte-B6sFq-GU.js                5.48 kB │ gzip:   2.32 kB
+.vercel/output/static/assets/facturas-COI9gk8C.js               6.92 kB │ gzip:   2.55 kB
+.vercel/output/static/assets/configuracion-WflQXZ0J.js          7.26 kB │ gzip:   2.78 kB
+.vercel/output/static/assets/ordenes-BlTuzObe.js               10.88 kB │ gzip:   3.51 kB
+.vercel/output/static/assets/card-Keg8EOUa.js                  35.54 kB │ gzip:  11.67 kB
+.vercel/output/static/assets/productos-C2fyasmo.js             37.83 kB │ gzip:  11.55 kB
+.vercel/output/static/assets/DashboardLayout-DqlIfF76.js      165.59 kB │ gzip:  51.44 kB
+.vercel/output/static/assets/TopProductsChart-9RYr_yIe.js     386.44 kB │ gzip: 107.32 kB
+.vercel/output/static/assets/index-DvJqr6iu.js                394.11 kB │ gzip: 124.35 kB
+✓ built in 17.65s
+vite v7.3.3 building ssr environment for production...
+transforming...
+✓ 139 modules transformed.
+"createRequestHandler", "defineHandlerCallback", "transformPipeableStreamWithRouter" and "transformReadableStreamWithRouter" are imported from external module "@tanstack/router-core/ssr/server" but never used in "node_modules/@tanstack/start-server-core/dist/esm/index.js".
+"RawStream" is imported from external module "@tanstack/router-core" but never used in "node_modules/@tanstack/start-client-core/dist/esm/index.js".
+"hydrate" and "json" are imported from external module "@tanstack/router-core/ssr/client" but never used in "node_modules/@tanstack/start-client-core/dist/esm/index.js".
+rendering chunks...
+node_modules/.nitro/vite/services/ssr/assets/styles-Bu3A_nks.css                      90.89 kB
+node_modules/.nitro/vite/services/ssr/assets/empty-plugin-adapters-BFgPZ6_d.js         0.13 kB
+node_modules/.nitro/vite/services/ssr/assets/__root.server-Smb8gAFi.js                 1.32 kB
+node_modules/.nitro/vite/services/ssr/assets/KpiCard-7HluLZ8M.js                       1.34 kB
+node_modules/.nitro/vite/services/ssr/assets/alert-BzONadCE.js                         1.41 kB
+node_modules/.nitro/vite/services/ssr/assets/login.server-DNZBSN5_.js                  1.64 kB
+node_modules/.nitro/vite/services/ssr/assets/start-Bx2QZFCv.js                         1.71 kB
+node_modules/.nitro/vite/services/ssr/assets/registro.server-BJgstWkg.js               2.08 kB
+node_modules/.nitro/vite/services/ssr/assets/movimientos.server-D52nVdbe.js            2.26 kB
+node_modules/.nitro/vite/services/ssr/assets/ordenes.server-DpyRYh7J.js                2.45 kB
+node_modules/.nitro/vite/services/ssr/assets/facturas.server-Cyt79Axx.js               2.51 kB
+node_modules/.nitro/vite/services/ssr/assets/alertas-CVxN-QQQ.js                       2.66 kB
+node_modules/.nitro/vite/services/ssr/assets/dialog-B_f0TStx.js                        3.02 kB
+node_modules/.nitro/vite/services/ssr/assets/usuarios.server-O0AKq9yo.js               3.28 kB
+node_modules/.nitro/vite/services/ssr/assets/table-BouYnJps.js                         3.31 kB
+node_modules/.nitro/vite/services/ssr/index.js                                         3.34 kB
+node_modules/.nitro/vite/services/ssr/assets/recuperar-B-l-3R9T.js                     3.37 kB
+node_modules/.nitro/vite/services/ssr/assets/AlertsPanel-DengbHg_.js                   3.46 kB
+node_modules/.nitro/vite/services/ssr/assets/index-G6AuKK0H.js                         3.54 kB
+node_modules/.nitro/vite/services/ssr/assets/MovementsTable-BAIxrgi1.js                3.57 kB
+node_modules/.nitro/vite/services/ssr/assets/auth.server-Bzse9TXE.js                   3.75 kB
+node_modules/.nitro/vite/services/ssr/assets/supabase-Br440Slq.js                      5.13 kB
+node_modules/.nitro/vite/services/ssr/assets/_tanstack-start-manifest_v-6g1kwqI6.js    5.21 kB
+node_modules/.nitro/vite/services/ssr/assets/card-CWhZ6MbZ.js                          5.39 kB
+node_modules/.nitro/vite/services/ssr/assets/index.server-BtgwNxln.js                  5.42 kB
+node_modules/.nitro/vite/services/ssr/assets/reportes-5K-99lq2.js                      5.45 kB
+node_modules/.nitro/vite/services/ssr/assets/login-DEe64mjm.js                         5.71 kB
+node_modules/.nitro/vite/services/ssr/assets/productos.server-BVZpflVY.js              5.91 kB
+node_modules/.nitro/vite/services/ssr/assets/admin.limpiar-datos-laJa05h2.js           6.71 kB
+node_modules/.nitro/vite/services/ssr/assets/registro-DzJs5XlV.js                      7.04 kB
+node_modules/.nitro/vite/services/ssr/assets/movimientos-DjNHb2BR.js                   7.23 kB
+node_modules/.nitro/vite/services/ssr/assets/soporte-Doly9i0H.js                       7.95 kB
+node_modules/.nitro/vite/services/ssr/assets/usuarios-qhBO7AKP.js                      8.66 kB
+node_modules/.nitro/vite/services/ssr/assets/configuracion-Da4yOrAg.js                 9.56 kB
+node_modules/.nitro/vite/services/ssr/assets/TopProductsChart-DDQ1va2j.js             10.54 kB
+node_modules/.nitro/vite/services/ssr/assets/facturas-DPd4U-qZ.js                     13.07 kB
+node_modules/.nitro/vite/services/ssr/assets/router-CI_owxil.js                       15.24 kB
+node_modules/.nitro/vite/services/ssr/assets/ordenes-BtTndoDn.js                      19.53 kB
+node_modules/.nitro/vite/services/ssr/assets/productos-BysYco0Y.js                    23.44 kB
+node_modules/.nitro/vite/services/ssr/assets/server-Dc095x50.js                       69.83 kB
+node_modules/.nitro/vite/services/ssr/assets/DashboardLayout-CwGRB5Mx.js             101.57 kB
+✓ built in 2.77s
+
+[nitro] ◐ Building [Nitro] (preset: vercel, compatibility: 2026-07-03)
+[nitro] ✔ Generated public .vercel/output/static
+vite v7.3.3 building nitro environment for production...
+transforming...
+node_modules/@tanstack/react-router/dist/esm/index.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-router/dist/esm/index.js" was ignored.
+node_modules/sonner/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/sonner/dist/index.mjs" was ignored.
+node_modules/@tanstack/react-router/dist/esm/utils.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-router/dist/esm/utils.js" was ignored.
+node_modules/@tanstack/react-router/dist/esm/ClientOnly.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-router/dist/esm/ClientOnly.js" was ignored.
+node_modules/@tanstack/react-router/dist/esm/useNavigate.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-router/dist/esm/useNavigate.js" was ignored.
+node_modules/@tanstack/react-router/dist/esm/RouterProvider.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-router/dist/esm/RouterProvider.js" was ignored.
+node_modules/@tanstack/react-router/dist/esm/useRouterState.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-router/dist/esm/useRouterState.js" was ignored.
+node_modules/@tanstack/react-router/dist/esm/useBlocker.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-router/dist/esm/useBlocker.js" was ignored.
+node_modules/@tanstack/react-router/dist/esm/useLocation.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-router/dist/esm/useLocation.js" was ignored.
+node_modules/@tanstack/react-router/dist/esm/HeadContent.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-router/dist/esm/HeadContent.js" was ignored.
+node_modules/@radix-ui/react-dialog/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-dialog/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-tooltip/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-tooltip/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-popover/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-popover/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-avatar/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-avatar/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-select/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-select/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-label/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-label/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-alert-dialog/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-alert-dialog/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-dropdown-menu/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-dropdown-menu/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-switch/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-switch/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-progress/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-progress/dist/index.mjs" was ignored.
+node_modules/@tanstack/react-query/build/modern/useQueries.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-query/build/modern/useQueries.js" was ignored.
+node_modules/@tanstack/react-query/build/modern/useQuery.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-query/build/modern/useQuery.js" was ignored.
+node_modules/@tanstack/react-query/build/modern/QueryClientProvider.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-query/build/modern/QueryClientProvider.js" was ignored.
+node_modules/@tanstack/react-query/build/modern/HydrationBoundary.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-query/build/modern/HydrationBoundary.js" was ignored.
+node_modules/@tanstack/react-query/build/modern/useIsFetching.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-query/build/modern/useIsFetching.js" was ignored.
+node_modules/@tanstack/react-query/build/modern/useMutationState.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-query/build/modern/useMutationState.js" was ignored.
+node_modules/@tanstack/react-query/build/modern/QueryErrorResetBoundary.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-query/build/modern/QueryErrorResetBoundary.js" was ignored.
+node_modules/@tanstack/react-query/build/modern/useInfiniteQuery.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-query/build/modern/useInfiniteQuery.js" was ignored.
+node_modules/@tanstack/react-query/build/modern/IsRestoringProvider.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-query/build/modern/IsRestoringProvider.js" was ignored.
+node_modules/@tanstack/react-query/build/modern/useMutation.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-query/build/modern/useMutation.js" was ignored.
+node_modules/@tanstack/react-router/dist/esm/routerContext.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-router/dist/esm/routerContext.js" was ignored.
+node_modules/@tanstack/react-router/dist/esm/Matches.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-router/dist/esm/Matches.js" was ignored.
+node_modules/@tanstack/react-router/dist/esm/link.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-router/dist/esm/link.js" was ignored.
+node_modules/@tanstack/react-router/dist/esm/Asset.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-router/dist/esm/Asset.js" was ignored.
+node_modules/@tanstack/react-router/dist/esm/Match.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-router/dist/esm/Match.js" was ignored.
+node_modules/@tanstack/react-router/dist/esm/useRouter.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-router/dist/esm/useRouter.js" was ignored.
+node_modules/@tanstack/react-router/dist/esm/CatchBoundary.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-router/dist/esm/CatchBoundary.js" was ignored.
+node_modules/@tanstack/react-router/dist/esm/useMatch.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-router/dist/esm/useMatch.js" was ignored.
+node_modules/@tanstack/react-query/build/modern/useSuspenseQueries.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-query/build/modern/useSuspenseQueries.js" was ignored.
+node_modules/@tanstack/react-query/build/modern/useSuspenseQuery.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-query/build/modern/useSuspenseQuery.js" was ignored.
+node_modules/@tanstack/react-query/build/modern/useSuspenseInfiniteQuery.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-query/build/modern/useSuspenseInfiniteQuery.js" was ignored.
+node_modules/@radix-ui/react-dismissable-layer/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-dismissable-layer/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-focus-scope/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-focus-scope/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-portal/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-portal/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-presence/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-presence/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-focus-guards/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-focus-guards/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-popper/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-popper/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-collection/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-collection/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-menu/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-menu/dist/index.mjs" was ignored.
+node_modules/@tanstack/react-query/build/modern/errorBoundaryUtils.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-query/build/modern/errorBoundaryUtils.js" was ignored.
+node_modules/@tanstack/react-router/dist/esm/matchContext.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-router/dist/esm/matchContext.js" was ignored.
+node_modules/@tanstack/react-router/dist/esm/Transitioner.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-router/dist/esm/Transitioner.js" was ignored.
+node_modules/@tanstack/react-query/build/modern/useBaseQuery.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-query/build/modern/useBaseQuery.js" was ignored.
+node_modules/@radix-ui/react-roving-focus/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-roving-focus/dist/index.mjs" was ignored.
+✓ 2717 modules transformed.
+ℹ Tracing dependencies:
+- tslib (2.8.1)
+✔ Traced 1 dependencies (4 files) in 87ms.
+ℹ Ensure your production environment matches the builder OS and architecture (win32-x64) to avoid native module issues.
+rendering chunks...
+.vercel/output/functions/__server.func/_libs/hookable.mjs                                        0.00 kB
+.vercel/output/functions/__server.func/_libs/unctx.mjs                                           0.00 kB
+.vercel/output/functions/__server.func/_libs/ufo.mjs                                             0.00 kB
+.vercel/output/functions/__server.func/_libs/ohash.mjs                                           0.00 kB
+.vercel/output/functions/__server.func/_libs/ocache.mjs                                          0.00 kB
+.vercel/output/functions/__server.func/_libs/unstorage.mjs                                       0.00 kB
+.vercel/output/functions/__server.func/_libs/tanstack__store.mjs                                 0.00 kB
+.vercel/output/functions/__server.func/_libs/detect-node-es.mjs                                  0.00 kB
+.vercel/output/functions/__server.func/_libs/babel__runtime.mjs                                  0.00 kB
+.vercel/output/functions/__server.func/_libs/dom-helpers.mjs                                     0.00 kB
+.vercel/output/functions/__server.func/_libs/tslib.mjs                                           0.00 kB
+.vercel/output/functions/__server.func/_libs/tanstack__react-store.mjs                           0.02 kB
+.vercel/output/functions/__server.func/_libs/@radix-ui/react-use-effect-event+[...].mjs          0.02 kB
+.vercel/output/functions/__server.func/_libs/react-transition-group.mjs                          0.05 kB
+.vercel/output/functions/__server.func/_libs/radix-ui__number.mjs                                0.11 kB
+.vercel/output/functions/__server.func/_ssr/empty-plugin-adapters-BFgPZ6_d.mjs                   0.13 kB
+.vercel/output/functions/__server.func/_libs/tiny-invariant.mjs                                  0.14 kB
+.vercel/output/functions/__server.func/_libs/get-nonce.mjs                                       0.16 kB
+.vercel/output/functions/__server.func/_libs/@radix-ui/react-use-layout-effect+[...].mjs         0.17 kB
+.vercel/output/functions/__server.func/_libs/rou3.mjs                                            0.21 kB
+.vercel/output/functions/__server.func/_libs/@radix-ui/react-use-is-hydrated+[...].mjs           0.27 kB
+.vercel/output/functions/__server.func/_libs/radix-ui__react-direction.mjs                       0.28 kB
+.vercel/output/functions/__server.func/_libs/@radix-ui/react-use-callback-ref+[...].mjs          0.34 kB
+.vercel/output/functions/__server.func/_libs/radix-ui__primitive.mjs                             0.35 kB
+.vercel/output/functions/__server.func/_libs/radix-ui__react-use-previous.mjs                    0.39 kB
+.vercel/output/functions/__server.func/_libs/tanstack__react-query.mjs                           0.46 kB
+.vercel/output/functions/__server.func/_libs/clsx.mjs                                            0.51 kB
+.vercel/output/functions/__server.func/_chunks/ssr-renderer.mjs                                  0.51 kB
+.vercel/output/functions/__server.func/_libs/radix-ui__react-id.mjs                              0.51 kB
+.vercel/output/functions/__server.func/_libs/@radix-ui/react-use-escape-keydown+[...].mjs        0.69 kB
+.vercel/output/functions/__server.func/_libs/radix-ui__react-label.mjs                           0.69 kB
+.vercel/output/functions/__server.func/_libs/radix-ui__react-arrow.mjs                           0.71 kB
+.vercel/output/functions/__server.func/_libs/radix-ui__react-portal.mjs                          0.83 kB
+.vercel/output/functions/__server.func/_libs/@radix-ui/react-visually-hidden+[...].mjs           0.89 kB
+.vercel/output/functions/__server.func/_libs/radix-ui__react-focus-guards.mjs                    0.93 kB
+.vercel/output/functions/__server.func/_libs/radix-ui__react-compose-refs.mjs                    0.96 kB
+.vercel/output/functions/__server.func/_libs/radix-ui__react-separator.mjs                       1.07 kB
+.vercel/output/functions/__server.func/_libs/internmap.mjs                                       1.17 kB
+.vercel/output/functions/__server.func/_libs/radix-ui__react-use-size.mjs                        1.26 kB
+.vercel/output/functions/__server.func/_libs/victory-vendor.mjs                                  1.37 kB
+.vercel/output/functions/__server.func/_libs/cookie-es.mjs                                       1.46 kB
+.vercel/output/functions/__server.func/_libs/seroval-plugins.mjs                                 1.47 kB
+.vercel/output/functions/__server.func/_ssr/alert-BzONadCE.mjs                                   1.51 kB
+.vercel/output/functions/__server.func/_ssr/KpiCard-7HluLZ8M.mjs                                 1.52 kB
+.vercel/output/functions/__server.func/_libs/react-style-singleton.mjs                           1.67 kB
+.vercel/output/functions/__server.func/_libs/use-callback-ref.mjs                                1.75 kB
+.vercel/output/functions/__server.func/__root.server-Smb8gAFi.mjs                                1.87 kB
+.vercel/output/functions/__server.func/_ssr/start-Bx2QZFCv.mjs                                   1.94 kB
+.vercel/output/functions/__server.func/_libs/class-variance-authority.mjs                        2.14 kB
+.vercel/output/functions/__server.func/_ssr/login.server-DNZBSN5_.mjs                            2.20 kB
+.vercel/output/functions/__server.func/_libs/@radix-ui/react-use-controllable-state+[...].mjs    2.29 kB
+.vercel/output/functions/__server.func/_libs/use-sync-external-store.mjs                         2.43 kB
+.vercel/output/functions/__server.func/_libs/prop-types.mjs                                      2.53 kB
+.vercel/output/functions/__server.func/_libs/isbot.mjs                                           2.56 kB
+.vercel/output/functions/__server.func/_ssr/registro.server-BJgstWkg.mjs                         2.64 kB
+.vercel/output/functions/__server.func/_libs/use-sidecar.mjs                                     2.65 kB
+.vercel/output/functions/__server.func/_ssr/movimientos.server-D52nVdbe.mjs                      2.82 kB
+.vercel/output/functions/__server.func/_ssr/ordenes.server-DpyRYh7J.mjs                          3.01 kB
+.vercel/output/functions/__server.func/_ssr/facturas.server-Cyt79Axx.mjs                         3.07 kB
+.vercel/output/functions/__server.func/_ssr/dialog-B_f0TStx.mjs                                  3.17 kB
+.vercel/output/functions/__server.func/_libs/radix-ui__react-collection.mjs                      3.22 kB
+.vercel/output/functions/__server.func/_ssr/index.mjs                                            3.34 kB
+.vercel/output/functions/__server.func/_libs/d3-path.mjs                                         3.36 kB
+.vercel/output/functions/__server.func/_libs/radix-ui__react-progress.mjs                        3.56 kB
+.vercel/output/functions/__server.func/_ssr/table-BouYnJps.mjs                                   3.57 kB
+.vercel/output/functions/__server.func/_ssr/usuarios.server-O0AKq9yo.mjs                         3.83 kB
+.vercel/output/functions/__server.func/_ssr/AlertsPanel-DengbHg_.mjs                             3.89 kB
+.vercel/output/functions/__server.func/_libs/react-remove-scroll-bar.mjs                         3.96 kB
+.vercel/output/functions/__server.func/_libs/aria-hidden.mjs                                     4.06 kB
+.vercel/output/functions/__server.func/_libs/react-is.mjs                                        4.11 kB
+.vercel/output/functions/__server.func/_ssr/MovementsTable-BAIxrgi1.mjs                          4.13 kB
+.vercel/output/functions/__server.func/_libs/radix-ui__react-primitive.mjs                       4.17 kB
+.vercel/output/functions/__server.func/_ssr/auth.server-Bzse9TXE.mjs                             4.30 kB
+.vercel/output/functions/__server.func/_libs/d3-interpolate.mjs                                  4.34 kB
+.vercel/output/functions/__server.func/_ssr/recuperar-B-l-3R9T.mjs                               4.40 kB
+.vercel/output/functions/__server.func/_libs/radix-ui__react-avatar.mjs                          4.48 kB
+.vercel/output/functions/__server.func/_libs/radix-ui__react-presence.mjs                        4.86 kB
+.vercel/output/functions/__server.func/_libs/radix-ui__react-switch.mjs                          4.91 kB
+.vercel/output/functions/__server.func/_ssr/alertas-CVxN-QQQ.mjs                                 4.99 kB
+.vercel/output/functions/__server.func/_ssr/supabase-Br440Slq.mjs                                5.15 kB
+.vercel/output/functions/__server.func/_tanstack-start-manifest_v-6g1kwqI6.mjs                   5.21 kB
+.vercel/output/functions/__server.func/_ssr/card-CWhZ6MbZ.mjs                                    5.67 kB
+.vercel/output/functions/__server.func/_ssr/index.server-BtgwNxln.mjs                            5.98 kB
+.vercel/output/functions/__server.func/_libs/tanstack__history.mjs                               5.99 kB
+.vercel/output/functions/__server.func/_ssr/productos.server-BVZpflVY.mjs                        6.47 kB
+.vercel/output/functions/__server.func/_libs/eventemitter3.mjs                                   6.52 kB
+.vercel/output/functions/__server.func/_ssr/index-G6AuKK0H.mjs                                   6.67 kB
+.vercel/output/functions/__server.func/_ssr/login-DEe64mjm.mjs                                   6.91 kB
+.vercel/output/functions/__server.func/_libs/radix-ui__react-alert-dialog.mjs                    7.10 kB
+.vercel/output/functions/__server.func/_libs/d3-array.mjs                                        7.16 kB
+.vercel/output/functions/__server.func/index.mjs                                                 7.46 kB
+.vercel/output/functions/__server.func/_libs/radix-ui__react-focus-scope.mjs                     8.07 kB
+.vercel/output/functions/__server.func/_ssr/registro-DzJs5XlV.mjs                                8.31 kB
+.vercel/output/functions/__server.func/_libs/floating-ui__react-dom.mjs                          8.42 kB
+.vercel/output/functions/__server.func/_libs/radix-ui__react-context.mjs                         8.51 kB
+.vercel/output/functions/__server.func/_ssr/reportes-5K-99lq2.mjs                                8.66 kB
+.vercel/output/functions/__server.func/_libs/srvx.mjs                                            8.77 kB
+.vercel/output/functions/__server.func/_libs/@radix-ui/react-dismissable-layer+[...].mjs         8.97 kB
+.vercel/output/functions/__server.func/_libs/floating-ui__utils.mjs                              9.47 kB
+.vercel/output/functions/__server.func/_libs/radix-ui__react-roving-focus.mjs                    9.53 kB
+.vercel/output/functions/__server.func/_ssr/admin.limpiar-datos-laJa05h2.mjs                     9.71 kB
+.vercel/output/functions/__server.func/_libs/d3-format.mjs                                       9.81 kB
+.vercel/output/functions/__server.func/_ssr/movimientos-DjNHb2BR.mjs                            10.10 kB
+.vercel/output/functions/__server.func/_libs/d3-color.mjs                                       10.63 kB
+.vercel/output/functions/__server.func/_libs/d3-time.mjs                                        10.78 kB
+.vercel/output/functions/__server.func/_ssr/soporte-Doly9i0H.mjs                                10.81 kB
+.vercel/output/functions/__server.func/_ssr/TopProductsChart-DDQ1va2j.mjs                       11.23 kB
+.vercel/output/functions/__server.func/_libs/radix-ui__react-popper.mjs                         11.68 kB
+.vercel/output/functions/__server.func/_libs/radix-ui__react-dropdown-menu.mjs                  11.79 kB
+.vercel/output/functions/__server.func/_libs/supabase__functions-js.mjs                         11.91 kB
+.vercel/output/functions/__server.func/_ssr/usuarios-qhBO7AKP.mjs                               11.92 kB
+.vercel/output/functions/__server.func/_libs/radix-ui__react-popover.mjs                        12.18 kB
+.vercel/output/functions/__server.func/_libs/recharts-scale.mjs                                 12.43 kB
+.vercel/output/functions/__server.func/_ssr/configuracion-Da4yOrAg.mjs                          12.80 kB
+.vercel/output/functions/__server.func/_libs/react-remove-scroll.mjs                            13.37 kB
+.vercel/output/functions/__server.func/_libs/radix-ui__react-dialog.mjs                         13.58 kB
+.vercel/output/functions/__server.func/_libs/fast-equals.mjs                                    13.70 kB
+.vercel/output/functions/__server.func/_libs/h3.mjs                                             14.32 kB
+.vercel/output/functions/__server.func/_libs/iceberg-js.mjs                                     15.70 kB
+.vercel/output/functions/__server.func/_ssr/router-CI_owxil.mjs                                 16.31 kB
+.vercel/output/functions/__server.func/_ssr/facturas-DPd4U-qZ.mjs                               16.73 kB
+.vercel/output/functions/__server.func/_libs/d3-time-format.mjs                                 18.50 kB
+.vercel/output/functions/__server.func/_libs/h3-v2.mjs                                          19.71 kB
+.vercel/output/functions/__server.func/_libs/radix-ui__react-tooltip.mjs                        19.74 kB
+.vercel/output/functions/__server.func/_libs/react.mjs                                          20.14 kB
+.vercel/output/functions/__server.func/_libs/floating-ui__dom.mjs                               21.28 kB
+.vercel/output/functions/__server.func/_libs/lucide-react.mjs                                   21.42 kB
+.vercel/output/functions/__server.func/_ssr/ordenes-BtTndoDn.mjs                                23.84 kB
+.vercel/output/functions/__server.func/_libs/floating-ui__core.mjs                              24.06 kB
+.vercel/output/functions/__server.func/_libs/d3-shape.mjs                                       24.56 kB
+.vercel/output/functions/__server.func/_libs/decimal.js-light.mjs                               26.70 kB
+.vercel/output/functions/__server.func/_libs/radix-ui__react-slot.mjs                           26.75 kB
+.vercel/output/functions/__server.func/_ssr/productos-BysYco0Y.mjs                              27.41 kB
+.vercel/output/functions/__server.func/_libs/d3-scale.mjs                                       29.02 kB
+.vercel/output/functions/__server.func/_libs/supabase__supabase-js.mjs                          31.47 kB
+.vercel/output/functions/__server.func/_libs/radix-ui__react-menu.mjs                           34.50 kB
+.vercel/output/functions/__server.func/_libs/react-smooth.mjs                                   38.16 kB
+.vercel/output/functions/__server.func/_libs/tanstack__react-router.mjs                         42.50 kB
+.vercel/output/functions/__server.func/_libs/seroval.mjs                                        48.40 kB
+.vercel/output/functions/__server.func/_libs/radix-ui__react-select.mjs                         50.64 kB
+.vercel/output/functions/__server.func/_libs/supabase__phoenix.mjs                              53.95 kB
+.vercel/output/functions/__server.func/_libs/tanstack__query-core.mjs                           54.77 kB
+.vercel/output/functions/__server.func/_libs/sonner.mjs                                         56.10 kB
+.vercel/output/functions/__server.func/_ssr/server-Dc095x50.mjs                                 69.41 kB
+.vercel/output/functions/__server.func/_libs/supabase__realtime-js.mjs                          73.92 kB
+.vercel/output/functions/__server.func/_libs/supabase__storage-js.mjs                           97.77 kB
+.vercel/output/functions/__server.func/_libs/tailwind-merge.mjs                                 99.21 kB
+.vercel/output/functions/__server.func/_ssr/DashboardLayout-CwGRB5Mx.mjs                       107.16 kB
+.vercel/output/functions/__server.func/_libs/lodash.mjs                                        113.23 kB
+.vercel/output/functions/__server.func/_libs/supabase__postgrest-js.mjs                        136.12 kB
+.vercel/output/functions/__server.func/_libs/tanstack__router-core.mjs                         171.49 kB
+.vercel/output/functions/__server.func/_libs/supabase__auth-js.mjs                             299.96 kB
+.vercel/output/functions/__server.func/_libs/recharts.mjs                                      477.76 kB
+.vercel/output/functions/__server.func/_libs/react-dom.mjs                                     509.17 kB
+✓ built in 19.75s
+ℹ Generated .vercel/output/nitro.json
+
+[nitro] ✔ You can preview this build using npx vite preview
+[nitro] ✔ You can deploy this build using npx nitro deploy --prebuilt

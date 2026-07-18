@@ -4,13 +4,13 @@ import { Bell, Search, AlertTriangle, PackageX, CheckCircle, X } from "lucide-re
 import { SidebarProvider, SidebarTrigger, SidebarInset } from "@/components/ui/sidebar";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { AppSidebar } from "@/components/dashboard/AppSidebar";
 import { AiChatBot } from "@/components/dashboard/AiChatBot";
+import { UserMenu } from "@/components/dashboard/UserMenu";
 import { getDashboardKpisFn } from "@/routes/index.server";
-import { useRouter, useNavigate } from "@tanstack/react-router";
+import { useNavigate, useRouteContext } from "@tanstack/react-router";
 import { cn } from "@/lib/utils";
 
 interface DashboardLayoutProps {
@@ -29,6 +29,9 @@ interface Alerta {
 
 export function DashboardLayout({ title, description, children }: DashboardLayoutProps) {
   const navigate = useNavigate();
+  // @ts-ignore — user viene del beforeLoad de __root__
+  const context = useRouteContext({ from: "__root__" }) as { user?: unknown };
+  const user = context?.user as any;
   const [searchValue, setSearchValue] = useState("");
   const [alertas, setAlertas] = useState<Alerta[]>([]);
   const [leidas, setLeidas] = useState<Set<string>>(new Set());
@@ -189,9 +192,17 @@ export function DashboardLayout({ title, description, children }: DashboardLayou
               </PopoverContent>
             </Popover>
 
-            <Avatar className="h-8 w-8">
-              <AvatarFallback className="bg-primary text-primary-foreground text-xs">MR</AvatarFallback>
-            </Avatar>
+            <div className="flex items-center gap-2">
+              {user?.email && (
+                <span
+                  className="hidden max-w-[180px] truncate text-xs text-muted-foreground sm:inline"
+                  title={user.email}
+                >
+                  {user.email}
+                </span>
+              )}
+              <UserMenu user={user} />
+            </div>
           </div>
         </header>
         <main className="flex-1 space-y-6 p-4 lg:p-6">{children}</main>

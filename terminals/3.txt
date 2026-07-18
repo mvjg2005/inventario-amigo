@@ -1,0 +1,32 @@
+---
+pid: 13064
+cwd: "C:\Users\MIVA\Desktop\inventario-amigo"
+command: "npx nitro deploy --prebuilt 2>&1"
+started_at: 2026-07-08T13:22:46.010Z
+running_for_ms: 449998   
+---
+ℹ $ npx vercel deploy --prebuilt
+Vercel CLI 54.18.0 (Node.js 24.15.0)
+Retrieving project…
+Deploying mjehoseba-gmailcoms-projects/inventario-amigo
+Uploading [--------------------] (0.0B/242.2KB)
+Uploading [=====---------------] (68.3KB/242.2KB)
+Uploading [==========----------] (132.3KB/242.2KB)
+Uploading [================----] (196.3KB/242.2KB)
+Uploading [====================] (242.2KB/242.2KB)
+https://inventario-amigo-oxllw6ytu-mjehoseba-gmailcoms-projects.vercel.app  Inspect         https://vercel.com/mjehoseba-gmailcoms-projects/inventario-amigo/B5myqzfRpSgju7uTKvTT1n2BmoWr
+  Preview         https://inventario-amigo-oxllw6ytu-mjehoseba-gmailcoms-projects.vercel.app
+Building…
+Building…
+Running build in Washington, D.C., USA (East) – iad1
+Build machine configuration: 2 cores, 8 GB
+Retrieving list of deployment files...
+Downloading 198 deployment files...
+Using prebuilt build artifacts from .vercel/output
+Learn more: https://vercel.link/build-output-api
+Deploying outputs...
+  Preview         https://inventario-amigo-oxllw6ytu-mjehoseba-gmailcoms-projects.vercel.app
+Completing…
+
+✓ Ready in 10s
+To deploy to production (inventario-amigo.vercel.app +1), run `vercel --prod`

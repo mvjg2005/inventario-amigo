@@ -1,0 +1,258 @@
+---
+pid: 20740
+cwd: "C:\Users\MIVA\Desktop\inventario-amigo"
+command: "vercel --prod --yes"
+started_at: 2026-07-08T13:25:35.396Z
+running_for_ms: 284997   
+---
+Vercel CLI 54.18.0 (Node.js 24.15.0)
+Retrieving project…
+Deploying mjehoseba-gmailcoms-projects/inventario-amigo
+Uploading [--------------------] (0.0B/113.1KB)
+Uploading [=====---------------] (32.0KB/113.1KB)
+Uploading [===========---------] (65.3KB/113.1KB)
+Uploading [===============-----] (89.4KB/113.1KB)
+Uploading [====================] (113.1KB/113.1KB)
+https://inventario-amigo-p2h72zrx5-mjehoseba-gmailcoms-projects.vercel.app  Inspect         https://vercel.com/mjehoseba-gmailcoms-projects/inventario-amigo/6vT7NfrKy8x2v74MbQV3fxsD7eC4
+  Production      https://inventario-amigo-p2h72zrx5-mjehoseba-gmailcoms-projects.vercel.app
+Building…
+Building…
+Running build in Washington, D.C., USA (East) – iad1
+Build machine configuration: 2 cores, 8 GB
+Retrieving list of deployment files...
+Previous build caches not available.
+Downloading 398 deployment files...
+Running "vercel build"
+Vercel CLI 54.19.0
+Installing dependencies...
+npm warn deprecated prebuild-install@7.1.3: No longer maintained. Please contact the author of the relevant native addon; alternatives are available.
+npm warn deprecated @esbuild-kit/esm-loader@2.6.5: Merged into tsx: https://tsx.is
+npm warn deprecated @esbuild-kit/core-utils@3.3.2: Merged into tsx: https://tsx.is
+npm warn deprecated glob@10.5.0: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+npm warn deprecated recharts@2.15.4: 1.x and 2.x branches are no longer active. Bump to Recharts v3 to receive latest features and bugfixes. See https://github.com/recharts/recharts/wiki/3.0-migration-guide
+npm warn deprecated dax-sh@0.43.2: This package has moved to simply be 'dax' instead of 'dax-sh'
+added 887 packages in 15s
+192 packages are looking for funding
+run `npm fund` for details
+> build
+> vite build
+[info] [nitro:vercel] Using `nodejs24.x` runtime.
+[info] [nitro:vercel] Using `web` entry format.
+Warning: Route file "/vercel/path0/src/routes/__root.server.ts" does not export a Route. This file will not be included in the route tree.
+If this file is not intended to be a route, you can exclude it using one of these options:
+1. Rename the file to "/vercel/path0/src/routes/-__root.server.ts" (prefix with "-")
+2. Use 'routeFileIgnorePattern' in your config to match this file
+Current configuration:
+routeFileIgnorePrefix: "-"
+routeFileIgnorePattern: undefined
+Warning: Route file "/vercel/path0/src/routes/facturas.server.ts" does not export a Route. This file will not be included in the route tree.
+If this file is not intended to be a route, you can exclude it using one of these options:
+1. Rename the file to "/vercel/path0/src/routes/-facturas.server.ts" (prefix with "-")
+2. Use 'routeFileIgnorePattern' in your config to match this file
+Current configuration:
+routeFileIgnorePrefix: "-"
+routeFileIgnorePattern: undefined
+Warning: Route file "/vercel/path0/src/routes/index.server.ts" does not export a Route. This file will not be included in the route tree.
+If this file is not intended to be a route, you can exclude it using one of these options:
+1. Rename the file to "/vercel/path0/src/routes/-index.server.ts" (prefix with "-")
+2. Use 'routeFileIgnorePattern' in your config to match this file
+Current configuration:
+routeFileIgnorePrefix: "-"
+routeFileIgnorePattern: undefined
+Warning: Route file "/vercel/path0/src/routes/login.server.ts" does not export a Route. This file will not be included in the route tree.
+If this file is not intended to be a route, you can exclude it using one of these options:
+1. Rename the file to "/vercel/path0/src/routes/-login.server.ts" (prefix with "-")
+2. Use 'routeFileIgnorePattern' in your config to match this file
+Current configuration:
+routeFileIgnorePrefix: "-"
+routeFileIgnorePattern: undefined
+Warning: Route file "/vercel/path0/src/routes/movimientos.server.ts" does not export a Route. This file will not be included in the route tree.
+If this file is not intended to be a route, you can exclude it using one of these options:
+1. Rename the file to "/vercel/path0/src/routes/-movimientos.server.ts" (prefix with "-")
+2. Use 'routeFileIgnorePattern' in your config to match this file
+Current configuration:
+routeFileIgnorePrefix: "-"
+routeFileIgnorePattern: undefined
+Warning: Route file "/vercel/path0/src/routes/ordenes.server.ts" does not export a Route. This file will not be included in the route tree.
+If this file is not intended to be a route, you can exclude it using one of these options:
+1. Rename the file to "/vercel/path0/src/routes/-ordenes.server.ts" (prefix with "-")
+2. Use 'routeFileIgnorePattern' in your config to match this file
+Current configuration:
+routeFileIgnorePrefix: "-"
+routeFileIgnorePattern: undefined
+Warning: Route file "/vercel/path0/src/routes/productos.server.ts" does not export a Route. This file will not be included in the route tree.
+If this file is not intended to be a route, you can exclude it using one of these options:
+1. Rename the file to "/vercel/path0/src/routes/-productos.server.ts" (prefix with "-")
+2. Use 'routeFileIgnorePattern' in your config to match this file
+Current configuration:
+routeFileIgnorePrefix: "-"
+routeFileIgnorePattern: undefined
+Warning: Route file "/vercel/path0/src/routes/registro.server.ts" does not export a Route. This file will not be included in the route tree.
+If this file is not intended to be a route, you can exclude it using one of these options:
+1. Rename the file to "/vercel/path0/src/routes/-registro.server.ts" (prefix with "-")
+2. Use 'routeFileIgnorePattern' in your config to match this file
+Current configuration:
+routeFileIgnorePrefix: "-"
+routeFileIgnorePattern: undefined
+Warning: Route file "/vercel/path0/src/routes/usuarios.server.ts" does not export a Route. This file will not be included in the route tree.
+If this file is not intended to be a route, you can exclude it using one of these options:
+1. Rename the file to "/vercel/path0/src/routes/-usuarios.server.ts" (prefix with "-")
+2. Use 'routeFileIgnorePattern' in your config to match this file
+Current configuration:
+routeFileIgnorePrefix: "-"
+routeFileIgnorePattern: undefined
+vite v7.3.3 building client environment for production...
+transforming...
+✓ 2687 modules transformed.
+rendering chunks...
+computing gzip size...
+.vercel/output/static/assets/styles-Bu3A_nks.css               90.89 kB │ gzip:  15.17 kB
+.vercel/output/static/assets/circle-check-big-Blw0vAN2.js       0.19 kB │ gzip:   0.18 kB
+.vercel/output/static/assets/download-Nu33dUZv.js               0.23 kB │ gzip:   0.19 kB
+.vercel/output/static/assets/circle-alert-Ciir7ztA.js           0.25 kB │ gzip:   0.19 kB
+.vercel/output/static/assets/trash-2-CQyh9hZ2.js                0.33 kB │ gzip:   0.21 kB
+.vercel/output/static/assets/package-2-yzaohKVn.js              0.34 kB │ gzip:   0.25 kB
+.vercel/output/static/assets/eye-ojNNqOyY.js                    0.64 kB │ gzip:   0.34 kB
+.vercel/output/static/assets/KpiCard-CJi7kV4j.js                0.89 kB │ gzip:   0.45 kB
+.vercel/output/static/assets/alert-CoeQ4yBT.js                  0.95 kB │ gzip:   0.49 kB
+.vercel/output/static/assets/alertas-y1AlV7w4.js                1.59 kB │ gzip:   0.85 kB
+.vercel/output/static/assets/dialog-DL3aT4kj.js                 2.02 kB │ gzip:   0.88 kB
+.vercel/output/static/assets/MovementsTable-BDVlH38q.js         2.16 kB │ gzip:   0.87 kB
+.vercel/output/static/assets/recuperar-BxwyBghL.js              2.19 kB │ gzip:   0.99 kB
+.vercel/output/static/assets/table-ByTu974y.js                  2.26 kB │ gzip:   0.80 kB
+.vercel/output/static/assets/index-B6H4-fWB.js                  2.44 kB │ gzip:   1.18 kB
+.vercel/output/static/assets/login-BcILHNzF.js                  3.29 kB │ gzip:   1.38 kB
+.vercel/output/static/assets/reportes-CqxkUSEo.js               3.50 kB │ gzip:   1.84 kB
+.vercel/output/static/assets/movimientos-CY-pRUHo.js            3.80 kB │ gzip:   1.63 kB
+.vercel/output/static/assets/admin.limpiar-datos-BDuFUIL2.js    3.83 kB │ gzip:   1.58 kB
+.vercel/output/static/assets/registro-CR6ZcIzf.js               4.02 kB │ gzip:   1.74 kB
+.vercel/output/static/assets/usuarios-UYPedKmX.js               4.44 kB │ gzip:   1.79 kB
+.vercel/output/static/assets/AlertsPanel-CvM8Tp7K.js            4.90 kB │ gzip:   2.13 kB
+.vercel/output/static/assets/soporte-B6sFq-GU.js                5.48 kB │ gzip:   2.32 kB
+.vercel/output/static/assets/facturas-COI9gk8C.js               6.92 kB │ gzip:   2.55 kB
+.vercel/output/static/assets/configuracion-WflQXZ0J.js          7.26 kB │ gzip:   2.78 kB
+.vercel/output/static/assets/ordenes-BlTuzObe.js               10.88 kB │ gzip:   3.51 kB
+.vercel/output/static/assets/card-Keg8EOUa.js                  35.54 kB │ gzip:  11.67 kB
+.vercel/output/static/assets/productos-C2fyasmo.js             37.83 kB │ gzip:  11.55 kB
+.vercel/output/static/assets/DashboardLayout-DqlIfF76.js      165.59 kB │ gzip:  51.44 kB
+.vercel/output/static/assets/TopProductsChart-9RYr_yIe.js     386.44 kB │ gzip: 107.32 kB
+.vercel/output/static/assets/index-DvJqr6iu.js                394.11 kB │ gzip: 124.35 kB
+✓ built in 9.00s
+vite v7.3.3 building ssr environment for production...
+transforming...
+"createRequestHandler", "defineHandlerCallback", "transformPipeableStreamWithRouter" and "transformReadableStreamWithRouter" are imported from external module "@tanstack/router-core/ssr/server" but never used in "node_modules/@tanstack/start-server-core/dist/esm/index.js".
+"RawStream" is imported from external module "@tanstack/router-core" but never used in "node_modules/@tanstack/start-client-core/dist/esm/index.js".
+"hydrate" and "json" are imported from external module "@tanstack/router-core/ssr/client" but never used in "node_modules/@tanstack/start-client-core/dist/esm/index.js".
+✓ 139 modules transformed.
+rendering chunks...
+node_modules/.nitro/vite/services/ssr/assets/styles-Bu3A_nks.css                      90.89 kB
+node_modules/.nitro/vite/services/ssr/assets/empty-plugin-adapters-BFgPZ6_d.js         0.13 kB
+node_modules/.nitro/vite/services/ssr/assets/__root.server-BNCA9yR5.js                 1.32 kB
+node_modules/.nitro/vite/services/ssr/assets/KpiCard-7HluLZ8M.js                       1.34 kB
+node_modules/.nitro/vite/services/ssr/assets/alert-BzONadCE.js                         1.41 kB
+node_modules/.nitro/vite/services/ssr/assets/login.server-DOmgW54g.js                  1.64 kB
+node_modules/.nitro/vite/services/ssr/assets/start-5w6jRWRI.js                         1.71 kB
+node_modules/.nitro/vite/services/ssr/assets/registro.server-DVSWjJeO.js               2.08 kB
+node_modules/.nitro/vite/services/ssr/assets/movimientos.server-CGE3b-Hu.js            2.26 kB
+node_modules/.nitro/vite/services/ssr/assets/ordenes.server-BcrjpP_2.js                2.45 kB
+node_modules/.nitro/vite/services/ssr/assets/facturas.server-Cslwkxzj.js               2.51 kB
+node_modules/.nitro/vite/services/ssr/assets/alertas-pQ7GKmqc.js                       2.66 kB
+node_modules/.nitro/vite/services/ssr/assets/dialog-B_f0TStx.js                        3.02 kB
+node_modules/.nitro/vite/services/ssr/assets/usuarios.server-BStYaZxn.js               3.28 kB
+node_modules/.nitro/vite/services/ssr/assets/table-BouYnJps.js                         3.31 kB
+node_modules/.nitro/vite/services/ssr/index.js                                         3.34 kB
+node_modules/.nitro/vite/services/ssr/assets/recuperar-B-l-3R9T.js                     3.37 kB
+node_modules/.nitro/vite/services/ssr/assets/AlertsPanel-DengbHg_.js                   3.46 kB
+node_modules/.nitro/vite/services/ssr/assets/index-6F-MORkS.js                         3.54 kB
+node_modules/.nitro/vite/services/ssr/assets/MovementsTable-BAIxrgi1.js                3.57 kB
+node_modules/.nitro/vite/services/ssr/assets/auth.server-moj1LVBP.js                   3.75 kB
+node_modules/.nitro/vite/services/ssr/assets/_tanstack-start-manifest_v-NYCN3IUW.js    4.83 kB
+node_modules/.nitro/vite/services/ssr/assets/supabase-DKrwDw4J.js                      5.13 kB
+node_modules/.nitro/vite/services/ssr/assets/card-CWhZ6MbZ.js                          5.39 kB
+node_modules/.nitro/vite/services/ssr/assets/index.server-tC4D4ur6.js                  5.42 kB
+node_modules/.nitro/vite/services/ssr/assets/reportes-4T5XbT1X.js                      5.45 kB
+node_modules/.nitro/vite/services/ssr/assets/login-B-eOuUC3.js                         5.71 kB
+node_modules/.nitro/vite/services/ssr/assets/productos.server-BmFTzwXS.js              5.91 kB
+node_modules/.nitro/vite/services/ssr/assets/admin.limpiar-datos-CbejM2QR.js           6.71 kB
+node_modules/.nitro/vite/services/ssr/assets/registro-CAYBXIxS.js                      7.04 kB
+node_modules/.nitro/vite/services/ssr/assets/movimientos-DKM005M7.js                   7.23 kB
+node_modules/.nitro/vite/services/ssr/assets/soporte-dq-Pn-6V.js                       7.95 kB
+node_modules/.nitro/vite/services/ssr/assets/usuarios-CC067f1K.js                      8.66 kB
+node_modules/.nitro/vite/services/ssr/assets/configuracion-QKMVGAPi.js                 9.56 kB
+node_modules/.nitro/vite/services/ssr/assets/TopProductsChart-DDQ1va2j.js             10.54 kB
+node_modules/.nitro/vite/services/ssr/assets/facturas-IERLynPS.js                     13.07 kB
+node_modules/.nitro/vite/services/ssr/assets/router-C9O_v_KL.js                       15.24 kB
+node_modules/.nitro/vite/services/ssr/assets/ordenes-BdSIYsDJ.js                      19.53 kB
+node_modules/.nitro/vite/services/ssr/assets/productos-BW_YzqQD.js                    23.44 kB
+node_modules/.nitro/vite/services/ssr/assets/server-Cx3x3jWi.js                       69.83 kB
+node_modules/.nitro/vite/services/ssr/assets/DashboardLayout-BMlclF33.js             101.57 kB
+✓ built in 1.75s
+[start] [nitro] Building [Nitro] (preset: `vercel`, compatibility: `2026-07-08`)
+[success] [nitro] Generated public .vercel/output/static
+vite v7.3.3 building nitro environment for production...
+transforming...
+node_modules/@tanstack/react-router/dist/esm/index.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-router/dist/esm/index.js" was ignored.
+node_modules/sonner/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/sonner/dist/index.mjs" was ignored.
+node_modules/@tanstack/react-router/dist/esm/utils.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-router/dist/esm/utils.js" was ignored.
+node_modules/@tanstack/react-router/dist/esm/ClientOnly.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-router/dist/esm/ClientOnly.js" was ignored.
+node_modules/@tanstack/react-router/dist/esm/useNavigate.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-router/dist/esm/useNavigate.js" was ignored.
+node_modules/@tanstack/react-router/dist/esm/RouterProvider.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-router/dist/esm/RouterProvider.js" was ignored.
+node_modules/@tanstack/react-router/dist/esm/useBlocker.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-router/dist/esm/useBlocker.js" was ignored.
+node_modules/@tanstack/react-router/dist/esm/useRouterState.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-router/dist/esm/useRouterState.js" was ignored.
+node_modules/@tanstack/react-router/dist/esm/useLocation.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-router/dist/esm/useLocation.js" was ignored.
+node_modules/@tanstack/react-router/dist/esm/HeadContent.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-router/dist/esm/HeadContent.js" was ignored.
+node_modules/@tanstack/react-router/dist/esm/CatchBoundary.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-router/dist/esm/CatchBoundary.js" was ignored.
+node_modules/@tanstack/react-router/dist/esm/useRouter.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-router/dist/esm/useRouter.js" was ignored.
+node_modules/@tanstack/react-router/dist/esm/useMatch.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-router/dist/esm/useMatch.js" was ignored.
+node_modules/@tanstack/react-router/dist/esm/link.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-router/dist/esm/link.js" was ignored.
+node_modules/@tanstack/react-router/dist/esm/Match.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-router/dist/esm/Match.js" was ignored.
+node_modules/@tanstack/react-router/dist/esm/Matches.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-router/dist/esm/Matches.js" was ignored.
+node_modules/@tanstack/react-router/dist/esm/Asset.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-router/dist/esm/Asset.js" was ignored.
+node_modules/@radix-ui/react-dialog/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-dialog/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-tooltip/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-tooltip/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-avatar/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-avatar/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-popover/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-popover/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-select/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-select/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-label/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-label/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-alert-dialog/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-alert-dialog/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-dropdown-menu/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-dropdown-menu/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-switch/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-switch/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-progress/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-progress/dist/index.mjs" was ignored.
+node_modules/@tanstack/react-query/build/modern/useQueries.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-query/build/modern/useQueries.js" was ignored.
+node_modules/@tanstack/react-query/build/modern/useQuery.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-query/build/modern/useQuery.js" was ignored.
+node_modules/@tanstack/react-query/build/modern/QueryClientProvider.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-query/build/modern/QueryClientProvider.js" was ignored.
+node_modules/@tanstack/react-query/build/modern/HydrationBoundary.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-query/build/modern/HydrationBoundary.js" was ignored.
+node_modules/@tanstack/react-query/build/modern/QueryErrorResetBoundary.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-query/build/modern/QueryErrorResetBoundary.js" was ignored.
+node_modules/@tanstack/react-query/build/modern/useIsFetching.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-query/build/modern/useIsFetching.js" was ignored.
+node_modules/@tanstack/react-query/build/modern/useMutationState.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-query/build/modern/useMutationState.js" was ignored.
+node_modules/@tanstack/react-query/build/modern/useMutation.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-query/build/modern/useMutation.js" was ignored.
+node_modules/@tanstack/react-query/build/modern/useInfiniteQuery.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-query/build/modern/useInfiniteQuery.js" was ignored.
+node_modules/@tanstack/react-query/build/modern/IsRestoringProvider.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-query/build/modern/IsRestoringProvider.js" was ignored.
+node_modules/@tanstack/react-router/dist/esm/routerContext.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-router/dist/esm/routerContext.js" was ignored.
+node_modules/@tanstack/react-router/dist/esm/matchContext.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-router/dist/esm/matchContext.js" was ignored.
+node_modules/@tanstack/react-query/build/modern/useSuspenseQuery.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-query/build/modern/useSuspenseQuery.js" was ignored.
+node_modules/@tanstack/react-query/build/modern/useSuspenseInfiniteQuery.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-query/build/modern/useSuspenseInfiniteQuery.js" was ignored.
+node_modules/@tanstack/react-query/build/modern/useSuspenseQueries.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-query/build/modern/useSuspenseQueries.js" was ignored.
+node_modules/@tanstack/react-router/dist/esm/Transitioner.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-router/dist/esm/Transitioner.js" was ignored.
+node_modules/@radix-ui/react-dismissable-layer/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-dismissable-layer/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-focus-scope/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-focus-scope/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-portal/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-portal/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-presence/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-presence/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-focus-guards/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-focus-guards/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-popper/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-popper/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-collection/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-collection/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-menu/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-menu/dist/index.mjs" was ignored.
+node_modules/@tanstack/react-query/build/modern/errorBoundaryUtils.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-query/build/modern/errorBoundaryUtils.js" was ignored.
+node_modules/@tanstack/react-query/build/modern/useBaseQuery.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-query/build/modern/useBaseQuery.js" was ignored.
+node_modules/@radix-ui/react-roving-focus/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-roving-focus/dist/index.mjs" was ignored.
+✓ 2717 modules transformed.
+[info] Tracing dependencies:
+- `tslib` (2.8.1)
+[success] Traced 1 dependencies (4 files) in 58ms.
+[info] Ensure your production environment matches the builder OS and architecture (`linux-x64`) to avoid native module issues.
+rendering chunks...
+  Production      https://inventario-amigo-p2h72zrx5-mjehoseba-gmailcoms-projects.vercel.app
+Completing…
+▲ Aliased         https://inventario-amigo.vercel.app
+
+✓ Ready in 53s

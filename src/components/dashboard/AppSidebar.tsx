@@ -13,7 +13,6 @@ import {
   Receipt,
   LifeBuoy,
   LogOut,
-  User as UserIcon,
 } from "lucide-react";
 import {
   Sidebar,
@@ -27,6 +26,8 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { logoutFn } from "@/lib/auth.server";
+import { UserAvatarFace } from "@/components/dashboard/UserMenu";
+import { getDisplayName } from "@/lib/userProfile";
 
 const items = [
   { title: "Panel", icon: LayoutDashboard, url: "/" as const },
@@ -107,24 +108,18 @@ export function AppSidebar() {
       <div className="mt-auto border-t border-sidebar-border flex flex-col">
         {user && (
           <div className="p-4 flex items-center justify-between border-b border-sidebar-border">
-            <div className="flex items-center gap-3 overflow-hidden">
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
-                <UserIcon className="h-4 w-4" />
-              </div>
-              <div className="flex flex-col truncate pr-2">
-                <span className="text-sm font-medium truncate">
-                  {user.user_metadata?.nombre ||
-                    user.user_metadata?.full_name ||
-                    user.user_metadata?.name ||
-                    user.email?.split("@")[0] ||
-                    "Mi Cuenta"}
+            <div className="flex items-center gap-3 overflow-hidden min-w-0">
+              <UserAvatarFace user={user} />
+              <div className="flex flex-col truncate pr-2 min-w-0">
+                <span className="text-sm font-medium truncate" title={getDisplayName(user)}>
+                  {getDisplayName(user)}
                 </span>
-                <span className="text-xs text-muted-foreground truncate">
+                <span className="text-xs text-muted-foreground truncate" title={user.email}>
                   {user.email}
                 </span>
               </div>
             </div>
-            <button 
+            <button
               onClick={handleLogout}
               className="p-2 shrink-0 text-muted-foreground hover:bg-muted hover:text-foreground rounded-md transition-colors"
               title="Cerrar sesión"
