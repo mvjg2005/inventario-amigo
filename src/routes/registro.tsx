@@ -122,7 +122,7 @@ function RegistroPage() {
   // ─── Pantalla de éxito: volver a iniciar sesión ─────────────────────────
   if (done) {
     return (
-      <div className="ocean-scene flex min-h-screen items-center justify-center px-4 py-12">
+      <div className="ocean-scene flex min-h-dvh items-center justify-center px-3 py-8 sm:px-4 sm:py-12">
         <OceanBackground />
 
         <div className="w-full max-w-md space-y-8">
@@ -191,7 +191,7 @@ function RegistroPage() {
   }
 
   return (
-    <div className="ocean-scene flex min-h-screen items-center justify-center px-4 py-12">
+    <div className="ocean-scene flex min-h-dvh items-center justify-center px-3 py-8 sm:px-4 sm:py-12">
       <OceanBackground />
 
       <div className="w-full max-w-md space-y-8">

@@ -75,13 +75,13 @@ function FacturasPage() {
 
   return (
     <DashboardLayout title="Facturas" description="Gestión de facturación y ventas">
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={() => setCurrency(currency === "BS" ? "USD" : "BS")}>
-            <DollarSign className="mr-2 h-4 w-4" />
-            Mostrar en {currency === "BS" ? "Dólares (USD)" : "Bolivianos (Bs)"}
+      <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:gap-4">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-2">
+          <Button variant="outline" size="sm" className="w-full justify-center sm:w-auto" onClick={() => setCurrency(currency === "BS" ? "USD" : "BS")}>
+            <DollarSign className="mr-2 h-4 w-4 shrink-0" />
+            <span className="truncate">Mostrar en {currency === "BS" ? "Dólares (USD)" : "Bolivianos (Bs)"}</span>
           </Button>
-          <Button variant="outline" size="sm" onClick={() => {
+          <Button variant="outline" size="sm" className="w-full justify-center sm:w-auto" onClick={() => {
             const csvRows = ["Numero de Factura,Cliente,Fecha,Estado,Producto,Cantidad,Precio Unitario (Bs),Subtotal (Bs)"];
             
             facturas.forEach(f => {
@@ -117,13 +117,13 @@ function FacturasPage() {
             URL.revokeObjectURL(url);
             toast.success("Facturas con desglose de productos exportadas");
           }}>
-            <Download className="mr-2 h-4 w-4" /> Exportar CSV
+            <Download className="mr-2 h-4 w-4 shrink-0" /> Exportar CSV
           </Button>
         </div>
 
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button size="sm">
+            <Button size="sm" className="w-full sm:w-auto">
               <Plus className="mr-2 h-4 w-4" /> Nueva Factura
             </Button>
           </DialogTrigger>
@@ -196,7 +196,7 @@ function FacturasPage() {
 
       <Card>
         <CardContent className="p-0">
-          <div className="w-full overflow-x-auto">
+          <div className="table-scroll">
             <Table>
               <TableHeader>
                 <TableRow>

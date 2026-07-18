@@ -138,26 +138,26 @@ function OrdenesPage() {
 
   return (
     <DashboardLayout title="Órdenes" description="Órdenes de compra a proveedores">
-      <div className="flex items-center justify-between flex-wrap gap-3">
-        <Button variant="outline" size="sm" onClick={exportCSV}>
+      <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+        <Button variant="outline" size="sm" className="w-full sm:w-auto" onClick={exportCSV}>
           <Download className="mr-2 h-4 w-4" /> Exportar CSV
         </Button>
 
         <Dialog open={isDialogOpen} onOpenChange={(v) => { setIsDialogOpen(v); if (!v) resetForm(); }}>
           <DialogTrigger asChild>
-            <Button size="sm"><Plus className="mr-2 h-4 w-4" />Nueva orden</Button>
+            <Button size="sm" className="w-full sm:w-auto"><Plus className="mr-2 h-4 w-4" />Nueva orden</Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl">
+          <DialogContent className="max-w-2xl sm:max-w-2xl">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
-                <ShoppingCart className="h-5 w-5 text-amber-600" />
+                <ShoppingCart className="h-5 w-5 shrink-0 text-amber-600" />
                 Nueva Orden de Compra
               </DialogTitle>
             </DialogHeader>
 
-            <form onSubmit={handleCreate} className="space-y-5 mt-2">
+            <form onSubmit={handleCreate} className="mt-2 space-y-5">
               {/* Proveedor + Estado */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div className="space-y-1.5">
                   <Label htmlFor="proveedor">Proveedor *</Label>
                   <Input
@@ -186,18 +186,18 @@ function OrdenesPage() {
 
               {/* Líneas de Producto */}
               <div className="space-y-2">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                   <Label className="flex items-center gap-1.5">
                     <Package className="h-4 w-4 text-amber-600" />
                     Productos comprados
                   </Label>
-                  <Button type="button" variant="outline" size="sm" onClick={addLinea}>
-                    <Plus className="h-3.5 w-3.5 mr-1" /> Agregar producto
+                  <Button type="button" variant="outline" size="sm" onClick={addLinea} className="w-full sm:w-auto">
+                    <Plus className="mr-1 h-3.5 w-3.5" /> Agregar producto
                   </Button>
                 </div>
 
-                {/* Cabecera de columnas */}
-                <div className="grid grid-cols-[1fr_80px_80px_90px_32px] gap-2 text-[11px] font-medium text-muted-foreground px-1">
+                {/* Cabecera de columnas (solo tablet+) */}
+                <div className="hidden grid-cols-[1fr_70px_70px_80px_32px] gap-2 px-1 text-[11px] font-medium text-muted-foreground sm:grid md:grid-cols-[1fr_80px_80px_90px_32px]">
                   <span>Producto</span>
                   <span className="text-center">Paquetes</span>
                   <span className="text-center">Unid/Paq</span>
@@ -205,42 +205,59 @@ function OrdenesPage() {
                   <span />
                 </div>
 
-                <div className="space-y-2 max-h-64 overflow-y-auto pr-1">
+                <div className="max-h-64 space-y-2 overflow-y-auto pr-1">
                   {lineas.map((l, idx) => (
-                    <div key={idx} className="grid grid-cols-[1fr_80px_80px_90px_32px] gap-2 items-center rounded-lg border border-border bg-muted/10 px-2 py-2">
-                      <Input
-                        placeholder="Ej: Mayonesa Hellmann's"
-                        className="h-8 text-sm"
-                        value={l.producto}
-                        onChange={e => updateLinea(idx, "producto", e.target.value)}
-                        required
-                      />
-                      <Input
-                        type="number" min="1" step="1"
-                        className="h-8 text-sm text-center"
-                        value={l.paquetes}
-                        onChange={e => updateLinea(idx, "paquetes", parseInt(e.target.value) || 1)}
-                      />
-                      <Input
-                        type="number" min="1" step="1"
-                        className="h-8 text-sm text-center"
-                        value={l.unidadesPorPaquete}
-                        onChange={e => updateLinea(idx, "unidadesPorPaquete", parseInt(e.target.value) || 1)}
-                      />
-                      <Input
-                        type="number" min="0" step="0.01"
-                        className="h-8 text-sm text-center"
-                        value={l.precioPorPaquete}
-                        onChange={e => updateLinea(idx, "precioPorPaquete", parseFloat(e.target.value) || 0)}
-                      />
-                      <Button
-                        type="button" variant="ghost" size="icon"
-                        className="h-8 w-8 text-rose-500 hover:bg-rose-50 hover:text-rose-600"
-                        onClick={() => removeLinea(idx)}
-                        disabled={lineas.length === 1}
-                      >
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </Button>
+                    <div
+                      key={idx}
+                      className="grid grid-cols-2 gap-2 rounded-lg border border-border bg-muted/10 px-2 py-2 sm:grid-cols-[1fr_70px_70px_80px_32px] sm:items-center md:grid-cols-[1fr_80px_80px_90px_32px]"
+                    >
+                      <div className="col-span-2 space-y-1 sm:col-span-1 sm:space-y-0">
+                        <span className="text-[11px] font-medium text-muted-foreground sm:hidden">Producto</span>
+                        <Input
+                          placeholder="Ej: Mayonesa Hellmann's"
+                          className="h-8 text-sm"
+                          value={l.producto}
+                          onChange={e => updateLinea(idx, "producto", e.target.value)}
+                          required
+                        />
+                      </div>
+                      <div className="space-y-1 sm:space-y-0">
+                        <span className="text-[11px] font-medium text-muted-foreground sm:hidden">Paquetes</span>
+                        <Input
+                          type="number" min="1" step="1"
+                          className="h-8 text-center text-sm"
+                          value={l.paquetes}
+                          onChange={e => updateLinea(idx, "paquetes", parseInt(e.target.value) || 1)}
+                        />
+                      </div>
+                      <div className="space-y-1 sm:space-y-0">
+                        <span className="text-[11px] font-medium text-muted-foreground sm:hidden">Unid/Paq</span>
+                        <Input
+                          type="number" min="1" step="1"
+                          className="h-8 text-center text-sm"
+                          value={l.unidadesPorPaquete}
+                          onChange={e => updateLinea(idx, "unidadesPorPaquete", parseInt(e.target.value) || 1)}
+                        />
+                      </div>
+                      <div className="space-y-1 sm:space-y-0">
+                        <span className="text-[11px] font-medium text-muted-foreground sm:hidden">Precio Paq ({getCurrencyLabel()})</span>
+                        <Input
+                          type="number" min="0" step="0.01"
+                          className="h-8 text-center text-sm"
+                          value={l.precioPorPaquete}
+                          onChange={e => updateLinea(idx, "precioPorPaquete", parseFloat(e.target.value) || 0)}
+                        />
+                      </div>
+                      <div className="col-span-2 flex justify-end sm:col-span-1 sm:justify-center">
+                        <Button
+                          type="button" variant="ghost" size="icon"
+                          className="h-8 w-8 text-rose-500 hover:bg-rose-50 hover:text-rose-600"
+                          onClick={() => removeLinea(idx)}
+                          disabled={lineas.length === 1}
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </Button>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -284,7 +301,7 @@ function OrdenesPage() {
       {/* Tabla de órdenes */}
       <Card>
         <CardContent className="p-0">
-          <div className="w-full overflow-x-auto">
+          <div className="table-scroll">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -365,7 +382,7 @@ function OrdenesPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="p-0">
-              <div className="w-full overflow-x-auto">
+              <div className="table-scroll">
                 <Table>
                   <TableHeader>
                     <TableRow>

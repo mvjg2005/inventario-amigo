@@ -88,15 +88,15 @@ function LoginPage() {
   };
 
   return (
-    <div className="ocean-scene flex min-h-screen items-center justify-center px-4 py-12">
+    <div className="ocean-scene flex min-h-dvh items-center justify-center px-3 py-8 sm:px-4 sm:py-12">
       <OceanBackground />
 
-      <div className="w-full max-w-md space-y-8">
+      <div className="w-full max-w-md space-y-6 sm:space-y-8">
         <div className="flex flex-col items-center text-center">
-          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/95 shadow-lg shadow-sky-950/20 ring-1 ring-white/60">
-            <Package2 className="h-7 w-7 text-sky-700" />
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/95 shadow-lg shadow-sky-950/20 ring-1 ring-white/60 sm:h-14 sm:w-14">
+            <Package2 className="h-6 w-6 text-sky-700 sm:h-7 sm:w-7" />
           </div>
-          <h1 className="mt-5 text-3xl font-bold tracking-tight text-white drop-shadow-sm">
+          <h1 className="mt-4 text-2xl font-bold tracking-tight text-white drop-shadow-sm sm:mt-5 sm:text-3xl">
             StockPyme
           </h1>
           <p className="mt-2 max-w-xs text-sm text-sky-50/90">

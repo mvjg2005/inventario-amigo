@@ -30,7 +30,7 @@ export function MovementsTable({ data }: MovementsTableProps) {
         <CardDescription>Entradas y salidas registradas en el almacén</CardDescription>
       </CardHeader>
       <CardContent className="p-0">
-        <div className="w-full overflow-x-auto">
+        <div className="table-scroll">
           <Table>
             <TableHeader>
               <TableRow>

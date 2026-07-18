@@ -5,6 +5,7 @@ import { KpiCard } from "@/components/dashboard/KpiCard";
 import { MovementsTable } from "@/components/dashboard/MovementsTable";
 import { AlertsPanel } from "@/components/dashboard/AlertsPanel";
 import { TopProductsChart } from "@/components/dashboard/TopProductsChart";
+import { CategoryPieChart } from "@/components/dashboard/CategoryPieChart";
 import { getDashboardKpisFn } from "./index.server";
 import { formatMoney } from "@/lib/utils";
 
@@ -37,8 +38,9 @@ function DashboardPage() {
   const errorTrend = kpis.porcentajeError === 0 ? "up" : kpis.porcentajeError < 5 ? "neutral" : "down";
 
   return (
-    <DashboardLayout title="Panel de control" description="Resumen general del inventario">
-      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+    <DashboardLayout title="Panel de control" description="Resumen general del inventario · vista analítica">
+      {/* KPIs — franja superior tipo Power BI */}
+      <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <KpiCard
           title="Productos totales"
           value={kpis.totalProductos.toLocaleString("es-BO")}
@@ -67,15 +69,25 @@ function DashboardPage() {
           title="Productos sin stock"
           value={`${kpis.porcentajeError}%`}
           delta={kpis.porcentajeError === 0 ? "Todo el inventario disponible ✓" : `${kpis.alertas.filter(a => a.severity === "out").length} sin existencias`}
-          trend={errorTrend as any}
+          trend={errorTrend as "up" | "down" | "neutral"}
           icon={AlertCircle}
           accent="bg-amber-50 text-amber-600"
         />
       </section>
 
-      <section className="grid gap-6 xl:grid-cols-3">
-        <div className="xl:col-span-2 space-y-6">
+      {/* Fila de visuales: barras + torta (estilo Power BI) */}
+      <section className="grid gap-4 xl:grid-cols-5">
+        <div className="xl:col-span-3">
           <TopProductsChart data={kpis.topProductos} />
+        </div>
+        <div className="xl:col-span-2">
+          <CategoryPieChart data={kpis.categorias ?? []} />
+        </div>
+      </section>
+
+      {/* Tabla de movimientos + alertas */}
+      <section className="grid gap-4 xl:grid-cols-3">
+        <div className="xl:col-span-2">
           <MovementsTable data={kpis.movimientosRecientes} />
         </div>
         <AlertsPanel alerts={kpis.alertas} />

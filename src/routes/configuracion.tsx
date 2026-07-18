@@ -399,14 +399,15 @@ function ConfiguracionPage() {
           </CardHeader>
           <CardContent className="space-y-1">
             {/* Alertas de bajo inventario */}
-            <div className="flex items-center justify-between py-3.5">
-              <div>
+            <div className="flex items-start justify-between gap-3 py-3.5 sm:items-center">
+              <div className="min-w-0 flex-1">
                 <p className="text-sm font-medium">Alertas de bajo inventario</p>
                 <p className="text-xs text-muted-foreground">
                   Muestra la campana y el panel de alertas cuando un producto baje del mínimo
                 </p>
               </div>
               <Switch
+                className="shrink-0"
                 checked={prefs.alertasBajoInventario}
                 onCheckedChange={() => togglePref("alertasBajoInventario")}
               />
@@ -414,8 +415,8 @@ function ConfiguracionPage() {
             <Separator />
 
             {/* Validación de movimientos */}
-            <div className="flex items-center justify-between py-3.5">
-              <div className="pr-4">
+            <div className="flex items-start justify-between gap-3 py-3.5 sm:items-center">
+              <div className="min-w-0 flex-1 pr-0 sm:pr-4">
                 <p className="text-sm font-medium">Validación de movimientos</p>
                 <p className="text-xs text-muted-foreground">
                   Si está activa, el asistente IA (Stocky) muestra la ficha del movimiento y espera
@@ -425,6 +426,7 @@ function ConfiguracionPage() {
                 </p>
               </div>
               <Switch
+                className="shrink-0"
                 checked={prefs.validacionMovimientos}
                 onCheckedChange={() => togglePref("validacionMovimientos")}
               />
@@ -434,8 +436,8 @@ function ConfiguracionPage() {
       </div>
 
       {/* Botón guardar */}
-      <div className="flex justify-end">
-        <Button onClick={handleGuardar} className="gap-2">
+      <div className="flex justify-stretch sm:justify-end">
+        <Button onClick={handleGuardar} className="w-full gap-2 sm:w-auto">
           <Save className="h-4 w-4" />
           Guardar cambios
         </Button>

@@ -24,6 +24,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { logoutFn } from "@/lib/auth.server";
 import { UserAvatarFace } from "@/components/dashboard/UserMenu";
@@ -45,6 +46,7 @@ const items = [
 export function AppSidebar() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const router = useRouter();
+  const { isMobile, setOpenMobile } = useSidebar();
   const [empresaNombre, setEmpresaNombre] = useState("Inventario Amigo");
 
   useEffect(() => {
@@ -65,6 +67,10 @@ export function AppSidebar() {
   const context = useRouteContext({ from: "__root__" }) as any;
   const user = context?.user;
 
+  const closeMobileNav = () => {
+    if (isMobile) setOpenMobile(false);
+  };
+
   const handleLogout = async () => {
     await logoutFn();
     router.invalidate();
@@ -74,11 +80,11 @@ export function AppSidebar() {
     <Sidebar collapsible="icon">
       <SidebarHeader className="border-b border-sidebar-border">
         <div className="flex items-center gap-2 px-2 py-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground">
             <Boxes className="h-5 w-5" />
           </div>
-          <div className="flex flex-col leading-tight">
-            <span className="text-sm font-semibold truncate max-w-[140px]" title={empresaNombre}>{empresaNombre}</span>
+          <div className="flex min-w-0 flex-col leading-tight">
+            <span className="max-w-[140px] truncate text-sm font-semibold" title={empresaNombre}>{empresaNombre}</span>
             <span className="text-xs text-muted-foreground">Inventario Premium</span>
           </div>
         </div>
@@ -93,7 +99,7 @@ export function AppSidebar() {
                 return (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton asChild isActive={active} tooltip={item.title}>
-                      <Link to={item.url}>
+                      <Link to={item.url} onClick={closeMobileNav}>
                         <item.icon className="h-4 w-4" />
                         <span>{item.title}</span>
                       </Link>
@@ -105,31 +111,31 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <div className="mt-auto border-t border-sidebar-border flex flex-col">
+      <div className="mt-auto flex flex-col border-t border-sidebar-border">
         {user && (
-          <div className="p-4 flex items-center justify-between border-b border-sidebar-border">
-            <div className="flex items-center gap-3 overflow-hidden min-w-0">
+          <div className="flex items-center justify-between gap-2 border-b border-sidebar-border p-3 sm:p-4">
+            <div className="flex min-w-0 items-center gap-3 overflow-hidden">
               <UserAvatarFace user={user} />
-              <div className="flex flex-col truncate pr-2 min-w-0">
-                <span className="text-sm font-medium truncate" title={getDisplayName(user)}>
+              <div className="flex min-w-0 flex-col truncate pr-2">
+                <span className="truncate text-sm font-medium" title={getDisplayName(user)}>
                   {getDisplayName(user)}
                 </span>
-                <span className="text-xs text-muted-foreground truncate" title={user.email}>
+                <span className="truncate text-xs text-muted-foreground" title={user.email}>
                   {user.email}
                 </span>
               </div>
             </div>
             <button
               onClick={handleLogout}
-              className="p-2 shrink-0 text-muted-foreground hover:bg-muted hover:text-foreground rounded-md transition-colors"
+              className="shrink-0 rounded-md p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
               title="Cerrar sesión"
             >
               <LogOut className="h-4 w-4" />
             </button>
           </div>
         )}
-        <div className="p-4">
-          <p className="text-[10px] text-muted-foreground text-center leading-tight">
+        <div className="p-3 sm:p-4">
+          <p className="text-center text-[10px] leading-tight text-muted-foreground">
             Elaborado por <br />
             <strong className="text-foreground">Jehoseba Gabriela Muñoz Valdez</strong>
           </p>

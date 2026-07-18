@@ -192,11 +192,11 @@ export function TopProductsChart({ data }: TopProductsChartProps) {
             Registra movimientos de salida para ver el gráfico
           </div>
         ) : (
-          <ChartContainer config={chartConfig} className="h-[300px] w-full">
+          <ChartContainer config={chartConfig} className="h-[240px] w-full sm:h-[300px]">
             <BarChart
               data={chartData}
-              margin={{ left: 0, right: 12, top: 12, bottom: 4 }}
-              barCategoryGap="22%"
+              margin={{ left: 0, right: 8, top: 12, bottom: 4 }}
+              barCategoryGap="18%"
             >
               <defs>
                 {chartData.map((item, index) => (

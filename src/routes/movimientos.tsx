@@ -70,12 +70,12 @@ function MovimientosPage() {
 
   return (
     <DashboardLayout title="Movimientos" description="Historial de entradas y salidas del almacén">
-      <div className="flex flex-wrap items-center justify-between gap-4">
+      <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:gap-4">
         <p className="text-sm text-muted-foreground">Todos los movimientos registrados</p>
 
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button size="sm"><Plus className="mr-2 h-4 w-4" />Registrar movimiento</Button>
+            <Button size="sm" className="w-full sm:w-auto"><Plus className="mr-2 h-4 w-4" />Registrar movimiento</Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>

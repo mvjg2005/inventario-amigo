@@ -272,7 +272,7 @@ export function VoiceRegistro({ onConfirm }: VoiceRegistroProps) {
         onClick={estado === "escuchando" ? detenerEscucha : () => { setIsOpen(true); iniciarEscucha(); }}
         size="lg"
         className={cn(
-          "fixed bottom-6 right-6 z-50 h-14 w-14 rounded-full shadow-xl transition-all duration-300",
+          "safe-bottom fixed right-3 z-50 h-12 w-12 rounded-full shadow-xl transition-all duration-300 sm:right-6 sm:h-14 sm:w-14",
           estado === "escuchando" ? "bg-rose-500 hover:bg-rose-600 animate-pulse scale-110" : "bg-primary hover:bg-primary/90"
         )}
         title="Registrar venta por voz o texto"

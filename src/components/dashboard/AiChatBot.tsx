@@ -747,36 +747,36 @@ export function AiChatBot() {
         onClick={() => setIsOpen(!isOpen)}
         size="lg"
         className={cn(
-          "fixed bottom-6 right-6 z-40 h-14 w-14 rounded-full shadow-2xl transition-all duration-300",
+          "safe-bottom fixed right-3 z-40 h-12 w-12 rounded-full shadow-2xl transition-all duration-300 sm:right-6 sm:h-14 sm:w-14",
           isOpen ? "bg-rose-500 hover:bg-rose-600 rotate-90 scale-90" : "bg-gradient-to-tr from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700"
         )}
         title="Asistente de IA Stocky"
       >
-        {isOpen ? <X className="h-6 w-6 text-white" /> : <Sparkles className="h-6 w-6 text-white animate-pulse" />}
+        {isOpen ? <X className="h-5 w-5 text-white sm:h-6 sm:w-6" /> : <Sparkles className="h-5 w-5 text-white animate-pulse sm:h-6 sm:w-6" />}
       </Button>
 
-      {/* Ventana de Chat */}
+      {/* Ventana de Chat — casi pantalla completa en móvil */}
       {isOpen && (
-        <div className="fixed bottom-24 right-6 z-40 flex h-[550px] w-[380px] flex-col rounded-2xl border border-border bg-card shadow-2xl backdrop-blur-xl animate-in fade-in slide-in-from-bottom-5 duration-300">
+        <div className="fixed inset-x-2 bottom-[calc(4.5rem+env(safe-area-inset-bottom,0px))] top-14 z-40 flex flex-col rounded-2xl border border-border bg-card shadow-2xl backdrop-blur-xl animate-in fade-in slide-in-from-bottom-5 duration-300 sm:inset-auto sm:bottom-24 sm:right-6 sm:top-auto sm:h-[min(550px,calc(100dvh-7rem))] sm:w-[min(380px,calc(100vw-1.5rem))]">
           
           {/* Header */}
-          <div className="flex items-center gap-3 rounded-t-2xl bg-gradient-to-r from-indigo-600 to-violet-600 px-4 py-3 text-white">
+          <div className="flex shrink-0 items-center gap-3 rounded-t-2xl bg-gradient-to-r from-indigo-600 to-violet-600 px-4 py-3 text-white">
             <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white/20">
               <Sparkles className="h-4 w-4" />
             </div>
-            <div className="flex-1">
+            <div className="min-w-0 flex-1">
               <h3 className="text-sm font-semibold leading-none">Stocky AI</h3>
-              <span className="text-[10px] text-indigo-100 flex items-center gap-1 mt-1">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-ping" /> Activo • Dictado de voz disponible
+              <span className="mt-1 flex items-center gap-1 truncate text-[10px] text-indigo-100">
+                <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-400 animate-ping" /> Activo • Dictado de voz disponible
               </span>
             </div>
-            <Button variant="ghost" size="icon" className="h-8 w-8 text-white hover:bg-white/10" onClick={() => setIsOpen(false)}>
+            <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0 text-white hover:bg-white/10" onClick={() => setIsOpen(false)}>
               <X className="h-4 w-4" />
             </Button>
           </div>
 
           {/* Historial de Mensajes */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-muted/20">
+          <div className="min-h-0 flex-1 space-y-4 overflow-y-auto overscroll-contain bg-muted/20 p-3 sm:p-4">
             {messages.map((msg) => {
               const isAssistant = msg.sender === "assistant";
               const intent = msg.intent;

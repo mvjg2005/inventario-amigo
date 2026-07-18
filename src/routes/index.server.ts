@@ -8,12 +8,24 @@ export interface TopProductoKpi {
   categoria: string;
 }
 
+export interface CategoriaDistribucion {
+  name: string;
+  /** Cantidad de productos en la categoría */
+  productos: number;
+  /** Unidades en stock */
+  stock: number;
+  /** Valor monetario (precio × stock) */
+  valor: number;
+}
+
 export interface DashboardKpis {
   totalProductos: number;
   valorInventario: number;        // suma(precio * stock) en Bs
   rotacionPromedio: number;       // salidas_mes / stock_total (simplificado)
   porcentajeError: number;        // productos sin_stock / total * 100
   topProductos: TopProductoKpi[];
+  /** Distribución por categoría para gráfico de torta (Power BI) */
+  categorias: CategoriaDistribucion[];
   alertas: { product: string; sku: string; stock: number; min: number; severity: "low" | "out" }[];
   movimientosRecientes: { id: string; product: string; sku: string; type: "entrada" | "salida"; qty: number; date: string; stock: "normal" | "bajo" | "sin" }[];
 }
@@ -151,6 +163,18 @@ export const getDashboardKpisFn = createServerFn({ method: "GET" }).handler(asyn
       });
   }
 
+  // Distribución por categoría (gráfico de torta estilo Power BI)
+  const byCat = new Map<string, CategoriaDistribucion>();
+  for (const p of prods) {
+    const name = (p.categoria && String(p.categoria).trim()) || "General";
+    const prev = byCat.get(name) ?? { name, productos: 0, stock: 0, valor: 0 };
+    prev.productos += 1;
+    prev.stock += Number(p.stock) || 0;
+    prev.valor += (Number(p.precio) || 0) * (Number(p.stock) || 0);
+    byCat.set(name, prev);
+  }
+  const categorias = [...byCat.values()].sort((a, b) => b.valor - a.valor);
+
   // Alertas: productos con stock bajo (bajo o sin)
   const alertas = prods
     .filter(p => p.estado === "bajo" || p.estado === "sin")
@@ -180,6 +204,7 @@ export const getDashboardKpisFn = createServerFn({ method: "GET" }).handler(asyn
     rotacionPromedio,
     porcentajeError,
     topProductos,
+    categorias,
     alertas,
     movimientosRecientes,
   };

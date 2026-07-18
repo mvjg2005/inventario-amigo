@@ -70,10 +70,10 @@ function UsuariosPage() {
 
   return (
     <DashboardLayout title="Usuarios" description="Gestión del equipo y permisos">
-      <div className="flex items-center justify-end">
+      <div className="flex items-center justify-stretch sm:justify-end">
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button size="sm"><Plus className="mr-2 h-4 w-4" />Agregar miembro</Button>
+            <Button size="sm" className="w-full sm:w-auto"><Plus className="mr-2 h-4 w-4" />Agregar miembro</Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
@@ -112,7 +112,7 @@ function UsuariosPage() {
 
       <Card>
         <CardContent className="p-0">
-          <div className="w-full overflow-x-auto">
+          <div className="table-scroll">
             <Table>
               <TableHeader>
                 <TableRow>

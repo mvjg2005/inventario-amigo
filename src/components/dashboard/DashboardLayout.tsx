@@ -96,23 +96,23 @@ export function DashboardLayout({ title, description, children }: DashboardLayou
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset>
-        <header className="sticky top-0 z-10 flex h-16 items-center gap-3 border-b border-border bg-background/80 px-4 backdrop-blur lg:px-6">
-          <SidebarTrigger />
-          <Separator orientation="vertical" className="h-6" />
-          <div>
-            <h1 className="text-base font-semibold leading-tight text-foreground">{title}</h1>
-            <p className="text-xs text-muted-foreground">{description}</p>
+        <header className="sticky top-0 z-10 flex min-h-14 flex-wrap items-center gap-2 border-b border-border bg-background/80 px-3 py-2 backdrop-blur sm:min-h-16 sm:gap-3 sm:px-4 lg:px-6">
+          <SidebarTrigger className="shrink-0" />
+          <Separator orientation="vertical" className="hidden h-6 sm:block" />
+          <div className="min-w-0 flex-1 sm:flex-none sm:max-w-[min(100%,280px)] md:max-w-xs">
+            <h1 className="truncate text-sm font-semibold leading-tight text-foreground sm:text-base">{title}</h1>
+            <p className="hidden truncate text-xs text-muted-foreground sm:block">{description}</p>
           </div>
 
-          <div className="ml-auto flex items-center gap-2">
-            {/* ─── Buscador funcional ─── */}
+          <div className="ml-auto flex shrink-0 items-center gap-1.5 sm:gap-2">
+            {/* ─── Buscador funcional (escritorio) ─── */}
             <form onSubmit={handleSearch} className="relative hidden md:block">
               <Search
                 className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
               />
               <Input
                 placeholder="Buscar producto, SKU…"
-                className="h-9 w-64 pl-8 pr-8"
+                className="h-9 w-48 pl-8 pr-8 lg:w-64"
                 value={searchValue}
                 onChange={e => setSearchValue(e.target.value)}
                 onKeyDown={handleSearchKeyDown}
@@ -128,6 +128,17 @@ export function DashboardLayout({ title, description, children }: DashboardLayou
               )}
             </form>
 
+            {/* ─── Buscador móvil (icono → productos) ─── */}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="md:hidden"
+              aria-label="Buscar productos"
+              onClick={() => navigate({ to: "/productos" })}
+            >
+              <Search className="h-4 w-4" />
+            </Button>
+
             {/* ─── Notificaciones reales ─── */}
             <Popover>
               <PopoverTrigger asChild>
@@ -140,7 +151,7 @@ export function DashboardLayout({ title, description, children }: DashboardLayou
                   )}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent align="end" className="w-80 p-0">
+              <PopoverContent align="end" className="w-[min(20rem,calc(100vw-1.5rem))] p-0">
                 <div className="flex items-center justify-between border-b border-border px-4 py-3">
                   <div>
                     <p className="text-sm font-semibold">Notificaciones</p>
@@ -225,7 +236,9 @@ export function DashboardLayout({ title, description, children }: DashboardLayou
             </div>
           </div>
         </header>
-        <main className="flex-1 space-y-6 p-4 lg:p-6">{children}</main>
+        <main className="flex-1 space-y-4 overflow-x-hidden p-3 pb-[calc(5rem+env(safe-area-inset-bottom,0px))] sm:space-y-6 sm:p-4 sm:pb-6 lg:p-6">
+          {children}
+        </main>
       </SidebarInset>
       <AiChatBot />
     </SidebarProvider>

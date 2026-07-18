@@ -163,9 +163,9 @@ function ProductosPage() {
 
   return (
     <DashboardLayout title="Productos" description="Catálogo completo del inventario">
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div className="flex w-full sm:w-auto items-center gap-2">
-          <div className="relative w-full sm:w-64">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+        <div className="flex w-full items-center gap-2 sm:w-auto">
+          <div className="relative min-w-0 flex-1 sm:w-64 sm:flex-none">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
               type="text"
@@ -245,7 +245,7 @@ function ProductosPage() {
       </div>
       <Card>
         <CardContent className="p-0">
-          <div className="w-full overflow-x-auto">
+          <div className="table-scroll">
             <Table>
               <TableHeader>
                 <TableRow>

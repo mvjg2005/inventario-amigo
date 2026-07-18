@@ -77,26 +77,26 @@ function SoportePage() {
 
   return (
     <DashboardLayout title="Soporte Técnico" description="¿Necesitas ayuda? Habla con nuestro asistente interactivo.">
-      <div className="grid gap-6 md:grid-cols-[2fr_1fr]">
-        <Card className="flex flex-col h-[600px] overflow-hidden">
+      <div className="grid gap-4 md:grid-cols-[minmax(0,2fr)_minmax(0,1fr)] md:gap-6">
+        <Card className="flex h-[min(70dvh,600px)] flex-col overflow-hidden md:h-[600px]">
           <CardHeader className="border-b bg-muted/20 py-3">
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <Bot className="h-5 w-5 text-primary" />
+            <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+              <Bot className="h-5 w-5 shrink-0 text-primary" />
               Asistente StockPyme
             </CardTitle>
           </CardHeader>
-          <CardContent className="flex-1 overflow-y-auto p-4 space-y-4" ref={scrollRef}>
+          <CardContent className="flex-1 space-y-4 overflow-y-auto p-3 sm:p-4" ref={scrollRef}>
             {messages.map((msg) => (
               <div key={msg.id} className={cn("flex w-full", msg.role === "user" ? "justify-end" : "justify-start")}>
                 <div className={cn(
-                  "flex gap-3 max-w-[80%] rounded-2xl px-4 py-3",
+                  "flex max-w-[90%] gap-2 rounded-2xl px-3 py-2.5 sm:max-w-[80%] sm:gap-3 sm:px-4 sm:py-3",
                   msg.role === "user" 
-                    ? "bg-primary text-primary-foreground rounded-tr-sm" 
-                    : "bg-muted text-foreground rounded-tl-sm"
+                    ? "rounded-tr-sm bg-primary text-primary-foreground" 
+                    : "rounded-tl-sm bg-muted text-foreground"
                 )}>
-                  {msg.role === "bot" && <Bot className="h-5 w-5 shrink-0 mt-0.5" />}
-                  <p className="text-sm leading-relaxed">{msg.content}</p>
-                  {msg.role === "user" && <User className="h-5 w-5 shrink-0 mt-0.5" />}
+                  {msg.role === "bot" && <Bot className="mt-0.5 h-5 w-5 shrink-0" />}
+                  <p className="text-sm leading-relaxed break-words">{msg.content}</p>
+                  {msg.role === "user" && <User className="mt-0.5 h-5 w-5 shrink-0" />}
                 </div>
               </div>
             ))}
