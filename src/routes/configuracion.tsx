@@ -1,4 +1,4 @@
-import { createFileRoute, useRouteContext } from "@tanstack/react-router";
+import { createFileRoute, useRouteContext, useRouter } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Building2, Bell, Save, UserCircle, ImagePlus, Check } from "lucide-react";
+import { Building2, Bell, Save, UserCircle, ImagePlus, Check, Loader2, Mail } from "lucide-react";
 import {
   CARTOON_AVATARS,
   fileToAvatarDataUrl,
@@ -19,6 +19,7 @@ import {
   setAvatarChoice,
 } from "@/lib/userProfile";
 import { loadSystemPrefs, saveSystemPrefs, type SystemPrefs } from "@/lib/systemPrefs";
+import { updateDisplayNameFn } from "@/routes/configuracion.server";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/configuracion")({
@@ -30,16 +31,20 @@ function ConfiguracionPage() {
   // @ts-ignore
   const context = useRouteContext({ from: "__root__" }) as { user?: any };
   const user = context?.user;
+  const router = useRouter();
   const fileRef = useRef<HTMLInputElement>(null);
   const [avatarTick, setAvatarTick] = useState(0);
   const [uploading, setUploading] = useState(false);
   const [presetId, setPresetId] = useState<string | null>(null);
+  const [displayName, setDisplayName] = useState(() => getDisplayName(user));
+  const [savingName, setSavingName] = useState(false);
 
   useEffect(() => {
     if (!user?.id) return;
     const stored = loadStoredProfile(user.id);
     setPresetId(stored.avatar?.type === "preset" ? stored.avatar.id : null);
-  }, [user?.id]);
+    setDisplayName(getDisplayName(user));
+  }, [user?.id, user?.user_metadata?.nombre, user?.user_metadata?.full_name, user?.user_metadata?.name, user?.email]);
 
   type EmpresaConfig = {
     razon: string;
@@ -115,6 +120,46 @@ function ConfiguracionPage() {
     }
   };
 
+  const handleSaveName = async () => {
+    const cleaned = displayName.trim();
+    if (cleaned.length < 2) {
+      toast.error("El nombre debe tener al menos 2 caracteres");
+      return;
+    }
+    if (cleaned === getDisplayName(user)) {
+      toast.message("No hay cambios en el nombre");
+      return;
+    }
+
+    setSavingName(true);
+    try {
+      const result = (await updateDisplayNameFn({
+        data: { nombre: cleaned },
+      } as any)) as { success: boolean; nombre: string };
+
+      setDisplayName(result.nombre);
+      await router.invalidate();
+      toast.success("Nombre actualizado correctamente");
+    } catch (err) {
+      toast.error(
+        err instanceof Error ? err.message : "No se pudo guardar el nombre",
+      );
+    } finally {
+      setSavingName(false);
+    }
+  };
+
+  // Usuario "en vivo" para avatar/menú: refleja el nombre del input al guardar vía invalidate
+  const previewUser = user
+    ? {
+        ...user,
+        user_metadata: {
+          ...(user.user_metadata ?? {}),
+          nombre: displayName.trim() || getDisplayName(user),
+        },
+      }
+    : user;
+
   return (
     <DashboardLayout title="Configuración" description="Preferencias generales del sistema">
       {/* ─── Mi perfil ─── */}
@@ -126,23 +171,79 @@ function ConfiguracionPage() {
               Mi perfil
             </CardTitle>
             <CardDescription>
-              Quién eres en el sistema y cómo se ve tu foto en el círculo de la cuenta
+              Puedes cambiar el nombre que se muestra en la app. El correo de inicio de sesión
+              no se modifica.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-5">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
               <div key={avatarTick}>
-                <UserAvatarFace user={user} size="lg" />
+                <UserAvatarFace user={previewUser} size="lg" />
               </div>
               <div className="min-w-0 space-y-1">
-                <p className="text-sm font-semibold text-foreground">{getDisplayName(user)}</p>
+                <p className="text-sm font-semibold text-foreground">
+                  {displayName.trim() || getDisplayName(user)}
+                </p>
                 <p className="truncate text-sm text-muted-foreground" title={user.email}>
                   {user.email}
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  Correo con el que iniciaste sesión
+                  Correo con el que iniciaste sesión (no editable)
                 </p>
               </div>
+            </div>
+
+            <Separator />
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-1.5">
+                <Label htmlFor="display-name">Nombre de usuario</Label>
+                <Input
+                  id="display-name"
+                  value={displayName}
+                  onChange={(e) => setDisplayName(e.target.value)}
+                  placeholder="Tu nombre"
+                  maxLength={80}
+                  autoComplete="name"
+                  disabled={savingName}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Así te verán en el menú y en el perfil
+                </p>
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="account-email">Correo de la cuenta</Label>
+                <div className="relative">
+                  <Mail className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    id="account-email"
+                    value={user.email ?? ""}
+                    readOnly
+                    disabled
+                    className="bg-muted/50 pl-9"
+                    title="El correo no se puede cambiar aquí"
+                  />
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Es el email con el que inicias sesión
+                </p>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap gap-2">
+              <Button
+                type="button"
+                onClick={handleSaveName}
+                disabled={savingName || !displayName.trim()}
+                className="gap-2"
+              >
+                {savingName ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Save className="h-4 w-4" />
+                )}
+                {savingName ? "Guardando…" : "Guardar nombre"}
+              </Button>
             </div>
 
             <Separator />

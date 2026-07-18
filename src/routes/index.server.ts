@@ -1,14 +1,44 @@
 import { createServerFn } from "@tanstack/react-start";
 import { getAuthSupabase, getCurrentUserId } from "@/lib/supabase";
 
+export interface TopProductoKpi {
+  product: string;
+  fullName: string;
+  ventas: number;
+  categoria: string;
+}
+
 export interface DashboardKpis {
   totalProductos: number;
   valorInventario: number;        // suma(precio * stock) en Bs
   rotacionPromedio: number;       // salidas_mes / stock_total (simplificado)
   porcentajeError: number;        // productos sin_stock / total * 100
-  topProductos: { product: string; ventas: number }[];
+  topProductos: TopProductoKpi[];
   alertas: { product: string; sku: string; stock: number; min: number; severity: "low" | "out" }[];
   movimientosRecientes: { id: string; product: string; sku: string; type: "entrada" | "salida"; qty: number; date: string; stock: "normal" | "bajo" | "sin" }[];
+}
+
+function shortLabel(nombre: string, max = 14) {
+  const clean = String(nombre ?? "").trim();
+  if (clean.length <= max) return clean;
+  return `${clean.slice(0, max - 1)}…`;
+}
+
+function resolveCategoria(
+  productName: string,
+  byName: Map<string, string>,
+  bySku: Map<string, string>,
+  sku?: string | null,
+): string {
+  if (sku && bySku.has(sku)) return bySku.get(sku)!;
+  const direct = byName.get(productName);
+  if (direct) return direct;
+  // Coincidencia flexible (mayúsculas / espacios)
+  const key = productName.trim().toLowerCase();
+  for (const [nombre, cat] of byName) {
+    if (nombre.trim().toLowerCase() === key) return cat;
+  }
+  return "General";
 }
 
 export const getDashboardKpisFn = createServerFn({ method: "GET" }).handler(async (): Promise<DashboardKpis> => {
@@ -18,11 +48,19 @@ export const getDashboardKpisFn = createServerFn({ method: "GET" }).handler(asyn
   // 1. Obtener todos los productos del usuario
   const { data: productos, error: pError } = await client
     .from("productos")
-    .select("id, nombre, sku, precio, stock, estado")
+    .select("id, nombre, sku, precio, stock, estado, categoria")
     .eq("user_id", userId);
 
   if (pError) throw new Error(pError.message);
   const prods = productos ?? [];
+
+  const categoriaByNombre = new Map<string, string>();
+  const categoriaBySku = new Map<string, string>();
+  for (const p of prods) {
+    const cat = (p.categoria && String(p.categoria).trim()) || "General";
+    if (p.nombre) categoriaByNombre.set(String(p.nombre), cat);
+    if (p.sku) categoriaBySku.set(String(p.sku), cat);
+  }
 
   // 2. Obtener movimientos del mes actual
   const inicioMes = new Date();
@@ -65,24 +103,52 @@ export const getDashboardKpisFn = createServerFn({ method: "GET" }).handler(asyn
     : 0;
 
   // Top 5 productos más vendidos (por salidas en movimientos del mes)
-  const ventasPorProducto: Record<string, number> = {};
+  const ventasPorProducto: Record<string, { qty: number; sku?: string }> = {};
   movs.filter(m => m.tipo === "salida").forEach(m => {
-    ventasPorProducto[m.producto] = (ventasPorProducto[m.producto] ?? 0) + m.cantidad;
+    const key = m.producto;
+    const prev = ventasPorProducto[key];
+    ventasPorProducto[key] = {
+      qty: (prev?.qty ?? 0) + Number(m.cantidad),
+      sku: m.sku ?? prev?.sku,
+    };
   });
 
   // Si no hay movimientos, usar los productos con más stock como referencia
-  let topProductos: { product: string; ventas: number }[];
+  let topProductos: TopProductoKpi[];
   if (Object.keys(ventasPorProducto).length > 0) {
     topProductos = Object.entries(ventasPorProducto)
-      .sort((a, b) => b[1] - a[1])
+      .sort((a, b) => b[1].qty - a[1].qty)
       .slice(0, 5)
-      .map(([product, ventas]) => ({ product, ventas }));
+      .map(([product, info]) => {
+        const categoria = resolveCategoria(
+          product,
+          categoriaByNombre,
+          categoriaBySku,
+          info.sku,
+        );
+        return {
+          product: shortLabel(product),
+          fullName: product,
+          ventas: info.qty,
+          categoria,
+        };
+      });
   } else {
     // Sin movimientos: mostrar top 5 por valor (precio * stock)
-    topProductos = prods
+    topProductos = [...prods]
       .sort((a, b) => (Number(b.precio) * Number(b.stock)) - (Number(a.precio) * Number(a.stock)))
       .slice(0, 5)
-      .map(p => ({ product: p.nombre.length > 12 ? p.nombre.slice(0, 12) + "…" : p.nombre, ventas: Number(p.stock) }));
+      .map((p) => {
+        const fullName = String(p.nombre ?? "");
+        const categoria =
+          (p.categoria && String(p.categoria).trim()) || "General";
+        return {
+          product: shortLabel(fullName),
+          fullName,
+          ventas: Number(p.stock),
+          categoria,
+        };
+      });
   }
 
   // Alertas: productos con stock bajo (bajo o sin)
